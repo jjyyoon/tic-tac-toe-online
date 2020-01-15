@@ -1,5 +1,5 @@
 .vscode
 frontend/node_modules
-backend/static/*
-backend/templates/* 
-backend/__pycache__/*
+backend/static
+backend/templates 
+backend/__pycache__
