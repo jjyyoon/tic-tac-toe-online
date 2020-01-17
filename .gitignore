@@ -3,3 +3,4 @@ frontend/node_modules
 backend/static
 backend/templates 
 backend/__pycache__
+frontend/package-lock.json
