@@ -3,8 +3,8 @@ import { Route, Switch } from "react-router-dom";
 
 import HomePage from "../src/pages/homepage/homepage.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
-// import logo from "./logo.svg";
-// import "./App.css";
+
+import "./App.css";
 
 class App extends React.Component {
   render() {
@@ -20,6 +20,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-//
-//
