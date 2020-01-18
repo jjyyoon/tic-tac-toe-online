@@ -4,7 +4,7 @@ import Grid from "../../components/grid/grid.component";
 
 const GamePage = () => (
   <div>
-    <Grid></Grid>
+    <Grid size={3} />
   </div>
 );
 
