@@ -1,0 +1,19 @@
+.chat-box {
+  display: table-cell;
+  width: 50%;
+  padding-right: 80px;
+
+  .chat-screen {
+    height: 559px;
+    overflow-y: auto;
+
+    p {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .input-group {
+    vertical-align: bottom;
+    margin: 1rem 0;
+  }
+}

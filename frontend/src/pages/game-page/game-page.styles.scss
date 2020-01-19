@@ -1,0 +1,31 @@
+.game-page {
+  .player {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    font-size: 32px;
+    font-weight: 600;
+    background-color: lightsteelblue;
+
+    div {
+      display: inline-block;
+      padding: 10px 80px;
+    }
+  }
+
+  .main {
+    display: table;
+    width: 100%;
+
+    .game-container {
+      display: table-cell;
+      width: 50%;
+      text-align: center;
+
+      .current-turn {
+        font-size: 40px;
+        font-weight: 700;
+      }
+    }
+  }
+}
