@@ -1,12 +1,36 @@
 import React from "react";
 import CustomButton from "../custom-button/custom-button.component";
 
+import "./chatBox.styles.scss";
+
 class ChatBox extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      chat: ["Hello", "How are you today?"],
+      chat: [
+        "Hello",
+        "How are you today?",
+        "How are you today?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "Hello",
+        "How are you today?",
+        "How are you today?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "Hello",
+        "How are you today?",
+        "How are you today?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?",
+        "What did you do yesterday?"
+      ],
       chatInput: ""
     };
   }
@@ -28,24 +52,28 @@ class ChatBox extends React.Component {
   render() {
     const { chat } = this.state;
     return (
-      <div>
-        <div className="chat-box">
+      <div className="chat-box">
+        <div className="chat-screen">
           {chat.map((element, idx) => (
             <p key={idx}>{element}</p>
           ))}
         </div>
-        <div className="form-inline">
+        <div className="input-group mb-3">
           <input
             type="text"
             className="form-control"
+            placeholder=""
             onChange={this.handleChange}
           />
-          <CustomButton
-            className="btn btn-outline-secondary"
-            handleClick={this.handleClick}
-          >
-            Send
-          </CustomButton>
+          <div className="input-group-append">
+            <CustomButton
+              className="btn btn-outline-secondary"
+              type="button"
+              handleClick={this.handleClick}
+            >
+              Send
+            </CustomButton>
+          </div>
         </div>
       </div>
     );

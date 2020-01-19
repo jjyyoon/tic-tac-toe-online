@@ -1,15 +1,19 @@
-.form-inline {
-  display: flex;
-  flex-wrap: row wrap;
-  align-items: stretch;
-  width: 100%;
+.chat-box {
+  display: table-cell;
+  width: 50%;
+  padding-right: 80px;
 
-  .form-control {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  .chat-screen {
+    height: 559px;
+    overflow-y: auto;
+
+    p {
+      margin-bottom: 0.5rem;
+    }
   }
 
-  .button-container {
-    margin-left: -1px;
+  .input-group {
+    vertical-align: bottom;
+    margin: 1rem 0;
   }
 }

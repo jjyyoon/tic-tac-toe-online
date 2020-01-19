@@ -28,15 +28,15 @@ class GamePage extends React.Component {
     const { player, currentTurn } = this.state;
 
     return (
-      <div>
+      <div className="game-page">
         <div className="player">
           <div>Player 1</div>
           <div>Player 2</div>
         </div>
 
         <div className="main">
-          <div className="gameContainer">
-            <h1>{`${currentTurn} Turn`}</h1>
+          <div className="game-container">
+            <h1 className="current-turn">{`${currentTurn} Turn`}</h1>
 
             <Grid
               player={player}
@@ -45,9 +45,7 @@ class GamePage extends React.Component {
               size={3}
             />
           </div>
-          <div className="chatContainer">
-            <ChatBox player={player} />
-          </div>
+          <ChatBox player={player} />
         </div>
       </div>
     );
