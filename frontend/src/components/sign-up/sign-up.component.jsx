@@ -13,7 +13,9 @@ const SignUp = () => (
     <form action="">
       <FormInput label="Email Address" type="email" />
       <FormInput label="Password" type="password" />
-      <CustomButton>Sign Up</CustomButton>
+      <CustomButton className="btn btn-lg btn-primary btn-block">
+        Sign Up
+      </CustomButton>
     </form>
   </div>
 );

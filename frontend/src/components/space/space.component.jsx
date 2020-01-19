@@ -3,10 +3,10 @@ import React from "react";
 import "./space.styles.scss";
 
 const Space = ({ player, currentTurn, update, validate, i, j }) => {
-  const mark = player === "player1" ? "O" : "X";
-  const handleClick = event => {
+  const mark = player === "Player 1" ? "O" : "X";
+  const handleClick = e => {
     if (player === currentTurn) {
-      event.target.innerHTML = mark;
+      e.target.innerHTML = mark;
       update(i, j, mark);
       validate();
     }

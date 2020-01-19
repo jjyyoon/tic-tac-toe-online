@@ -1,0 +1,15 @@
+.form-inline {
+  display: flex;
+  flex-wrap: row wrap;
+  align-items: stretch;
+  width: 100%;
+
+  .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .button-container {
+    margin-left: -1px;
+  }
+}

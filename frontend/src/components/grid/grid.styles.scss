@@ -1,4 +1,7 @@
-.row {
-  display: inline-flexbox;
-  margin-left: 30px;
+.grid {
+  margin: 35px 0;
+
+  .row {
+    justify-content: center;
+  }
 }

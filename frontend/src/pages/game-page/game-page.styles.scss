@@ -1,0 +1,27 @@
+.player {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 50px;
+  font-size: x-large;
+  font-weight: bold;
+  background-color: lightsteelblue;
+
+  div {
+    display: inline-block;
+    padding: 10px 50px;
+  }
+}
+
+.main {
+  .gameContainer {
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+  }
+
+  .chatContainer {
+    display: inline-block;
+    width: 50%;
+    vertical-align: top;
+  }
+}

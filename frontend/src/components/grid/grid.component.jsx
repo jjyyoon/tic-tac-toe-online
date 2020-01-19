@@ -40,7 +40,7 @@ class Grid extends React.Component {
     const { player, currentTurn } = this.props;
 
     return (
-      <div>
+      <div className="grid">
         {grid.map((row, rowIdx) => (
           <div key={rowIdx} className="row">
             {row.map((col, colIdx) => (
