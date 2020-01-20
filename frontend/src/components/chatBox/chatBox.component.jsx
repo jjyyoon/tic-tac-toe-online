@@ -1,4 +1,6 @@
 import React from "react";
+
+import ListContainer from "../list-container/list-container.component";
 import CustomButton from "../custom-button/custom-button.component";
 
 import "./chatBox.styles.scss";
@@ -35,6 +37,12 @@ class ChatBox extends React.Component {
     };
   }
 
+  componentDidUpdate() {
+    document
+      .getElementsByClassName("list-container")[0]
+      .lastChild.scrollIntoView();
+  }
+
   handleClick = () => {
     document.querySelector(".form-control").value = "";
 
@@ -53,11 +61,7 @@ class ChatBox extends React.Component {
     const { chat } = this.state;
     return (
       <div className="chat-box">
-        <div className="chat-screen">
-          {chat.map((element, idx) => (
-            <p key={idx}>{element}</p>
-          ))}
-        </div>
+        <ListContainer arr={chat} />
         <div className="input-group mb-3">
           <input
             type="text"
