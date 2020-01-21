@@ -43,7 +43,8 @@ class ChatBox extends React.Component {
       .lastChild.scrollIntoView();
   }
 
-  handleClick = () => {
+  handleClick = e => {
+    e.preventDefault();
     document.querySelector(".form-control").value = "";
 
     const { player } = this.props;
@@ -62,7 +63,7 @@ class ChatBox extends React.Component {
     return (
       <div className="chat-box">
         <ListContainer arr={chat} />
-        <div className="input-group mb-3">
+        <form className="input-group mb-3">
           <input
             type="text"
             className="form-control"
@@ -78,7 +79,7 @@ class ChatBox extends React.Component {
               Send
             </CustomButton>
           </div>
-        </div>
+        </form>
       </div>
     );
   }
