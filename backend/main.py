@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models.database import db
 from models.user import User
-from configuration import postgresql_uri
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = postgresql_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config.default')
+app.config.from_pyfile('config.py')
+# app.config.from_envvar('APP_CONFIG_FILE')
 
 db.init_app(app)
 
