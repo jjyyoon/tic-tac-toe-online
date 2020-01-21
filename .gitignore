@@ -3,6 +3,7 @@ frontend/node_modules
 frontend/package-lock.json
 backend/static
 backend/templates 
-backend/__pycache__
+backend/__pycache__/*
 backend/instance
-backend/models/__pycache__
+backend/models/__pycache__/*
+backend/config/__pycache__/*
