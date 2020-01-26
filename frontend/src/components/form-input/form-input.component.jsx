@@ -10,6 +10,7 @@ const FormInput = ({ label, name, type, onChange }) => (
       type={type}
       className="form-control"
       onChange={onChange}
+      required
     />
   </div>
 );

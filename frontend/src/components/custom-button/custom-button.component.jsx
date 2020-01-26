@@ -1,8 +1,8 @@
 import React from "react";
 import "./custom-button.styles.scss";
 
-const CustomButton = ({ className, handleClick, children }) => (
-  <button type="submit" className={className} onClick={handleClick}>
+const CustomButton = ({ className, children }) => (
+  <button type="submit" className={className}>
     {children}
   </button>
 );

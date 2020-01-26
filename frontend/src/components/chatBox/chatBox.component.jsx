@@ -44,7 +44,7 @@ class ChatBox extends React.Component {
       .lastChild.scrollIntoView();
   }
 
-  handleClick = e => {
+  handleSubmit = e => {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
@@ -64,14 +64,10 @@ class ChatBox extends React.Component {
     return (
       <div className="chat-box">
         <ListContainer arr={chat} />
-        <form className="input-group mb-3">
+        <form className="input-group mb-3" onSubmit={this.handleSubmit}>
           <FormInput name="message" type="text" onChange={this.handleChange} />
           <div className="input-group-append">
-            <CustomButton
-              className="btn btn-outline-secondary"
-              type="button"
-              handleClick={this.handleClick}
-            >
+            <CustomButton className="btn btn-outline-secondary" type="button">
               Send
             </CustomButton>
           </div>

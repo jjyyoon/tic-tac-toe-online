@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from "react-router";
 
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
@@ -7,7 +8,7 @@ import "./sign-in.styles.scss";
 
 class SignIn extends React.Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       email: "",
       password: ""
@@ -22,13 +23,18 @@ class SignIn extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     const { email, password } = this.state;
-    fetch("/auth", {
+    fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: email, password })
+      body: JSON.stringify({ email, password })
     })
       .then(res => res.json())
-      .then(data => console.log(data));
+      .then(data => {
+        const { setUser, history } = this.props;
+        setUser(data.user_name, data.user_email);
+        history.push("/list");
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -37,7 +43,7 @@ class SignIn extends React.Component {
         <h3>I already have an account</h3>
         <span>Sign in with your email and password</span>
 
-        <form action="" onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
           <FormInput
             label="Email Address"
             name="email"
@@ -59,4 +65,4 @@ class SignIn extends React.Component {
   }
 }
 
-export default SignIn;
+export default withRouter(SignIn);
