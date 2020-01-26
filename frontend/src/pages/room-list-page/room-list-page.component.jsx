@@ -20,12 +20,6 @@ class RoomListPage extends React.Component {
     };
   }
 
-  componentDidMount() {
-    console.log(
-      `listpage: ${this.props.currentUser.userName}, ${this.props.currentUser.userEmail}`
-    );
-  }
-
   handleClick = () => {
     fetch("/logout", { method: "POST" })
       .then(res => res.json())

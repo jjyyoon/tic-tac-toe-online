@@ -3,9 +3,10 @@ import { Route, Switch } from "react-router-dom";
 
 import HomePage from "../src/pages/homepage/homepage.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
+import Auth from "./components/auth/auth.component";
 import RoomListPage from "./pages/room-list-page/room-list-page.component";
 import GamePage from "../src/pages/game-page/game-page.component";
-import Auth from "./components/auth/auth.component";
+// import Auth from "./components/auth/auth.component";
 
 import "./App.css";
 
@@ -13,7 +14,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: null
+      currentUser: { userName: null, userEmail: null }
     };
   }
 

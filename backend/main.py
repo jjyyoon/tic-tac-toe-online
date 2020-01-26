@@ -32,6 +32,11 @@ def user_identity_lookup(user):
     return user.username
 
 
+@jwt.unauthorized_loader
+def my_unauthorized_callback(err_str):
+    return render_template('index.html'), 401
+
+
 @app.route('/register', methods=['POST'])
 def register():
     username = request.get_json()['userName'],
@@ -48,7 +53,8 @@ def register():
 
     if user:
         access_token = create_access_token(identity=user)
-        res = jsonify({'login': True, 'user_name': user.username, 'user_email': user.email})
+        res = jsonify(
+            {'login': True, 'user_name': user.username, 'user_email': user.email})
         set_access_cookies(res, access_token)
         return res, 200
 
@@ -62,7 +68,8 @@ def login():
 
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=user)
-        res = jsonify({'login': True, 'user_name': user.username, 'user_email': user.email})
+        res = jsonify(
+            {'login': True, 'user_name': user.username, 'user_email': user.email})
         set_access_cookies(res, access_token)
         return res, 200
 
