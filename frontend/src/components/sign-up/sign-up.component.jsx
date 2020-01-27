@@ -1,29 +1,83 @@
 import React from "react";
+import { withRouter } from "react-router";
 
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
 import "./sign-up.styles.scss";
 
-const SignUp = () => (
-  <div className="sign-up">
-    <h3>I don't have an account</h3>
-    <span>Sign up with your email and password</span>
+class SignUp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userName: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    };
+  }
 
-    <form action="" method="post">
-      <FormInput label="User Name" name="userName" type="text" />
-      <FormInput label="Email Address" name="email" type="email" />
-      <FormInput label="Password" name="password" type="password" />
-      <FormInput
-        label="Confirm Password"
-        name="confirmPassword"
-        type="password"
-      />
-      <CustomButton className="btn btn-lg btn-primary btn-block">
-        Sign Up
-      </CustomButton>
-    </form>
-  </div>
-);
+  handleChange = e => {
+    let { name, value } = e.target;
+    this.setState({ [name]: value });
+  };
 
-export default SignUp;
+  handleSubmit = e => {
+    e.preventDefault();
+    const { userName, email, password, confirmPassword } = this.state;
+
+    fetch("/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName, email, password })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const { setUser, history } = this.props;
+        setUser(data.user_name, data.user_email);
+        history.push("/list");
+      })
+      .catch(err => console.log(err));
+  };
+
+  render() {
+    return (
+      <div className="sign-up">
+        <h3>I don't have an account</h3>
+        <span>Sign up with your email and password</span>
+
+        <form onSubmit={this.handleSubmit}>
+          <FormInput
+            label="User Name"
+            name="userName"
+            type="text"
+            onChange={this.handleChange}
+          />
+          <FormInput
+            label="Email Address"
+            name="email"
+            type="email"
+            onChange={this.handleChange}
+          />
+          <FormInput
+            label="Password"
+            name="password"
+            type="password"
+            onChange={this.handleChange}
+          />
+          <FormInput
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            onChange={this.handleChange}
+          />
+          <CustomButton className="btn btn-lg btn-primary btn-block">
+            Sign Up
+          </CustomButton>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default withRouter(SignUp);

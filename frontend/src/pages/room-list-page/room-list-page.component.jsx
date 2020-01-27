@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from "react-router";
 
 import CustomButton from "../../components/custom-button/custom-button.component";
 import RoomList from "../../components/room-list/room-list.component";
@@ -19,6 +20,15 @@ class RoomListPage extends React.Component {
     };
   }
 
+  handleClick = () => {
+    fetch("/logout", { method: "POST" })
+      .then(res => res.json())
+      .then(data => {
+        this.props.history.push("/");
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     const { rooms, users } = this.state;
 
@@ -27,6 +37,7 @@ class RoomListPage extends React.Component {
         <div className="room-list">
           <h1 className="room-list-header">Rooms</h1>
           <CustomButton className="room-list-header">Create Room</CustomButton>
+          <button onClick={this.handleClick}>Log out</button>
           <div className="list-group">
             {rooms.map(room =>
               room.NumOfPlayers === 2 ? (
@@ -56,4 +67,4 @@ class RoomListPage extends React.Component {
   }
 }
 
-export default RoomListPage;
+export default withRouter(RoomListPage);

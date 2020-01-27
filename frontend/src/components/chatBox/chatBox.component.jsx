@@ -1,6 +1,7 @@
 import React from "react";
 
 import ListContainer from "../list-container/list-container.component";
+import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
 import "./chatBox.styles.scss";
@@ -43,7 +44,7 @@ class ChatBox extends React.Component {
       .lastChild.scrollIntoView();
   }
 
-  handleClick = e => {
+  handleSubmit = e => {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
@@ -63,19 +64,10 @@ class ChatBox extends React.Component {
     return (
       <div className="chat-box">
         <ListContainer arr={chat} />
-        <form className="input-group mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder=""
-            onChange={this.handleChange}
-          />
+        <form className="input-group mb-3" onSubmit={this.handleSubmit}>
+          <FormInput name="message" type="text" onChange={this.handleChange} />
           <div className="input-group-append">
-            <CustomButton
-              className="btn btn-outline-secondary"
-              type="button"
-              handleClick={this.handleClick}
-            >
+            <CustomButton className="btn btn-outline-secondary" type="button">
               Send
             </CustomButton>
           </div>
