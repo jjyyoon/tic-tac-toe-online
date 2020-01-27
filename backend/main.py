@@ -45,18 +45,17 @@ def register():
 
     pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
 
+    # Add func to prevent a user from using a username that already exists.
+
     new_user = User(username=username, email=email, password=pw_hash)
     db.session.add(new_user)
     db.session.commit()
 
-    user = User.query.filter_by(email=email).first()
-
-    if user:
-        access_token = create_access_token(identity=user)
-        res = jsonify(
-            {'login': True, 'user_name': user.username, 'user_email': user.email})
-        set_access_cookies(res, access_token)
-        return res, 200
+    access_token = create_access_token(identity=new_user)
+    res = jsonify({'user_name': new_user.username,
+                   'user_email': new_user.email})
+    set_access_cookies(res, access_token)
+    return res, 200
 
 
 @app.route('/login', methods=['POST'])
@@ -68,8 +67,7 @@ def login():
 
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=user)
-        res = jsonify(
-            {'login': True, 'user_name': user.username, 'user_email': user.email})
+        res = jsonify({'user_name': user.username, 'user_email': user.email})
         set_access_cookies(res, access_token)
         return res, 200
 
@@ -86,7 +84,7 @@ def auth():
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    res = jsonify({'logout': True})
+    res = jsonify({})
     unset_jwt_cookies(res)
     return res, 200
 

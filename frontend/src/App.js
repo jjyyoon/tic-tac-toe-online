@@ -6,7 +6,6 @@ import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up
 import Auth from "./components/auth/auth.component";
 import RoomListPage from "./pages/room-list-page/room-list-page.component";
 import GamePage from "../src/pages/game-page/game-page.component";
-// import Auth from "./components/auth/auth.component";
 
 import "./App.css";
 
