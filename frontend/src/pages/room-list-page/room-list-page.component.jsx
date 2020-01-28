@@ -1,6 +1,8 @@
 import React from "react";
 import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
 
+import WithAuth from "../../components/auth/with-auth";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import RoomList from "../../components/room-list/room-list.component";
 import ListContainer from "../../components/list-container/list-container.component";
@@ -38,6 +40,7 @@ class RoomListPage extends React.Component {
           <h1 className="room-list-header">Rooms</h1>
           <CustomButton className="room-list-header">Create Room</CustomButton>
           <button onClick={this.handleClick}>Log out</button>
+          <Link to="/game">game</Link>
           <div className="list-group">
             {rooms.map(room =>
               room.NumOfPlayers === 2 ? (
@@ -67,4 +70,4 @@ class RoomListPage extends React.Component {
   }
 }
 
-export default withRouter(RoomListPage);
+export default withRouter(WithAuth(RoomListPage));
