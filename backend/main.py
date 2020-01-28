@@ -6,6 +6,8 @@ from flask_socketio import SocketIO
 
 from models.database import db
 from models.user import User
+from models.room import Room
+from models.game import Game
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
