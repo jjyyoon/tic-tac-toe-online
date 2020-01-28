@@ -8,23 +8,15 @@ import GamePage from "../src/pages/game-page/game-page.component";
 
 import "./App.css";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <Switch>
-          <Route exact path="/" component={HomePage} />
-          <Route path="/signin" component={SignInAndSignUpPage} />
-          <Route path="/list" component={RoomListPage} />
-          <Route path="/game" component={GamePage} />
-        </Switch>
-      </div>
-    );
-  }
-}
+const App = () => (
+  <div className="App">
+    <Switch>
+      <Route exact path="/" component={HomePage} />
+      <Route path="/signin" component={SignInAndSignUpPage} />
+      <Route path="/list" component={RoomListPage} />
+      <Route path="/game" component={GamePage} />
+    </Switch>
+  </div>
+);
 
 export default App;

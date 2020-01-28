@@ -1,5 +1,4 @@
 import React from "react";
-import { socket } from "../../pages/game-page/game-page.component";
 
 import ListContainer from "../list-container/list-container.component";
 import FormInput from "../form-input/form-input.component";
@@ -37,6 +36,13 @@ class ChatBox extends React.Component {
       ],
       chatInput: ""
     };
+
+    const { socket } = this.props;
+    socket.on("load a chat", msg => {
+      const { chat } = this.state;
+      chat.push(msg);
+      this.setState({ chat });
+    });
   }
 
   componentDidUpdate() {
@@ -49,17 +55,11 @@ class ChatBox extends React.Component {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
-    const { player } = this.props;
-    const { chat, chatInput } = this.state;
-
-    const newChat = chat.slice();
+    const { player, socket } = this.props;
+    const { chatInput } = this.state;
     const newMessage = `${player}:　${chatInput}`;
-
-    socket.emit("send a message", newMessage, socket.on("receive"));
-
-    newChat.push(newMessage);
-
-    this.setState({ chat: newChat, chatInput: "" });
+    socket.emit("chat", newMessage);
+    this.setState({ chatInput: "" });
   };
 
   handleChange = e => {

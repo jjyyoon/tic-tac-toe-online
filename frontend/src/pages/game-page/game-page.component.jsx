@@ -8,8 +8,6 @@ import ChatBox from "../../components/chatBox/chatBox.component";
 
 import "./game-page.styles.scss";
 
-let socket;
-
 class GamePage extends React.Component {
   constructor(props) {
     super(props);
@@ -18,12 +16,12 @@ class GamePage extends React.Component {
 
     this.state = {
       player: userName,
-      currentTurn: "Player 1"
+      currentTurn: "Player 1",
+      socket: io("http://127.0.0.1:5000/")
     };
   }
 
   componentDidMount() {
-    socket = io("http://127.0.0.1:5000/");
     console.log(this.props.currentUser.userName);
     console.log(this.state.player);
   }
@@ -38,7 +36,7 @@ class GamePage extends React.Component {
   };
 
   render() {
-    const { player, currentTurn } = this.state;
+    const { player, currentTurn, socket } = this.state;
 
     return (
       <div className="game-page">
@@ -58,7 +56,7 @@ class GamePage extends React.Component {
               size={3}
             />
           </div>
-          <ChatBox player={player} />
+          <ChatBox player={player} socket={socket} />
         </div>
       </div>
     );
@@ -66,4 +64,3 @@ class GamePage extends React.Component {
 }
 
 export default withRouter(WithAuth(GamePage));
-export { socket };

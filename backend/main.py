@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO
 
 from models.database import db
 from models.user import User
@@ -98,10 +98,10 @@ def list():
     return render_template('index.html')
 
 
-@socketio.on('send a message')
+@socketio.on('chat')
 def handle_chat(message):
-    print(f'I got a message: {message}')
-    send(message, broadcast=True)
+    print(message)
+    socketio.emit('load a chat', message, broadcast=True)
 
 
 if __name__ == '__main__':
