@@ -1,5 +1,8 @@
 import React from "react";
+import { withRouter } from "react-router";
+import io from "socket.io-client";
 
+import WithAuth from "../../components/auth/with-auth";
 import Grid from "../../components/grid/grid.component";
 import ChatBox from "../../components/chatBox/chatBox.component";
 
@@ -9,10 +12,18 @@ class GamePage extends React.Component {
   constructor(props) {
     super(props);
 
+    const { userName } = props.currentUser;
+
     this.state = {
-      player: "Player 1",
-      currentTurn: "Player 1"
+      player: userName,
+      currentTurn: "Player 1",
+      socket: io("http://127.0.0.1:5000/")
     };
+  }
+
+  componentDidMount() {
+    console.log(this.props.currentUser.userName);
+    console.log(this.state.player);
   }
 
   changeTurn = () => {
@@ -25,7 +36,7 @@ class GamePage extends React.Component {
   };
 
   render() {
-    const { player, currentTurn } = this.state;
+    const { player, currentTurn, socket } = this.state;
 
     return (
       <div className="game-page">
@@ -45,11 +56,11 @@ class GamePage extends React.Component {
               size={3}
             />
           </div>
-          <ChatBox player={player} />
+          <ChatBox player={player} socket={socket} />
         </div>
       </div>
     );
   }
 }
 
-export default GamePage;
+export default withRouter(WithAuth(GamePage));

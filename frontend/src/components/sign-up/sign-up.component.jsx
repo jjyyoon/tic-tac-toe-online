@@ -31,11 +31,8 @@ class SignUp extends React.Component {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userName, email, password })
     })
-      .then(res => res.json())
-      .then(data => {
-        const { setUser, history } = this.props;
-        setUser(data.user_name, data.user_email);
-        history.push("/list");
+      .then(() => {
+        this.props.history.push("/list");
       })
       .catch(err => console.log(err));
   };
