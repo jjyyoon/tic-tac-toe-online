@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
 from flask_socketio import SocketIO
+from uuid import uuid4
 
 from models.database import db
 from models.user import User
@@ -94,10 +95,41 @@ def logout():
 
 
 @app.route('/list')
-@app.route('/game')
+@app.route('/game/<uuid:room_id>')
 @jwt_required
 def list():
     return render_template('index.html')
+
+
+@app.route('/createroom', methods=['POST'])
+def create_room():
+    room_id = uuid4()
+    name = request.get_json()['roomName'],
+    password = request.get_json()['roomPassword']
+    user_name = request.get_json()['userName']
+
+    if password:
+        pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
+    else:
+        pw_hash = password
+
+    new_room = Room(id=room_id, name=name,
+                    password=pw_hash, user1_name=user_name)
+    db.session.add(new_room)
+    db.session.commit()
+
+    res = jsonify({'room_id': room_id})
+    return res, 200
+
+
+@app.route('/loadrooms')
+def load_rooms():
+    rooms = Room.query.all()
+    res = {'rooms': []}
+    for room in rooms:
+        res['rooms'].append({'id': room.id, 'name': room.name, 'password': room.password,
+                             'user1': room.user1_name, 'user2': room.user2_name})
+    return jsonify(res)
 
 
 @socketio.on('chat')
