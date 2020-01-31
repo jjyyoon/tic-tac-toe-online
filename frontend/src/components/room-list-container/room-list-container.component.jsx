@@ -22,25 +22,16 @@ class RoomListContainer extends React.Component {
 
     return (
       <div className="list-group">
-        {rooms.map((room, index) =>
-          room.user1 && room.user2 ? (
-            <RoomList
-              key={index}
-              buttonColor="badge-secondary"
-              availability="Full"
-              path={`/game/${room.id}`}
-              password={room.password}
-            >{`${room.name}　(2/2)`}</RoomList>
-          ) : (
-            <RoomList
-              key={index}
-              buttonColor="badge-warning"
-              availability="Join"
-              path={`/game/${room.id}`}
-              password={room.password}
-            >{`${room.name}　(1/2)`}</RoomList>
-          )
-        )}
+        {rooms.map((room, index) => (
+          <RoomList
+            key={index}
+            availability={room.user1 && room.user2 ? "Full" : "Join"}
+            roomId={room.id}
+            password={room.password}
+          >
+            {room.name}
+          </RoomList>
+        ))}
       </div>
     );
   }

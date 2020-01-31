@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from "react-router";
 
 import ListContainer from "../list-container/list-container.component";
 import FormInput from "../form-input/form-input.component";
@@ -11,38 +12,19 @@ class ChatBox extends React.Component {
     super(props);
 
     this.state = {
-      chat: [
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?"
-      ],
+      chat: ["Hello", "How are you today?", "What did you do yesterday?"],
       chatInput: ""
     };
 
-    const { socket } = this.props;
-    socket.on("load a chat", msg => {
+    const updateChat = message => {
       const { chat } = this.state;
-      chat.push(msg);
+      chat.push(message);
       this.setState({ chat });
-    });
+    };
+
+    const { socket } = this.props;
+    socket.on("load a chat", message => updateChat(message));
+    socket.on("join message", message => updateChat(message));
   }
 
   componentDidUpdate() {
@@ -55,10 +37,10 @@ class ChatBox extends React.Component {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
-    const { player, socket } = this.props;
+    const { socket, room, player } = this.props;
     const { chatInput } = this.state;
     const newMessage = `${player}:　${chatInput}`;
-    socket.emit("chat", newMessage);
+    socket.emit("chat", { newMessage, room });
     this.setState({ chatInput: "" });
   };
 
@@ -74,7 +56,7 @@ class ChatBox extends React.Component {
         <form className="input-group mb-3" onSubmit={this.handleSubmit}>
           <FormInput name="message" type="text" onChange={this.handleChange} />
           <div className="input-group-append">
-            <CustomButton className="btn btn-outline-secondary" type="button">
+            <CustomButton type="submit" className="btn btn-outline-secondary">
               Send
             </CustomButton>
           </div>
@@ -84,4 +66,4 @@ class ChatBox extends React.Component {
   }
 }
 
-export default ChatBox;
+export default withRouter(ChatBox);

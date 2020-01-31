@@ -36,14 +36,6 @@ class RoomListPage extends React.Component {
       <div className="room-list-page">
         <div className="room-list">
           <h1 className="room-list-header">Rooms</h1>
-          <button
-            type="button"
-            className="room-list-header btn"
-            data-toggle="modal"
-            data-target="#createRoomModal"
-          >
-            Create Room
-          </button>
           <CreateRoom currentUser={currentUser} />
           <button onClick={this.handleClick}>Log out</button>
           <Link to="/game">game</Link>
