@@ -12,7 +12,7 @@ class CreateRoomForm extends React.Component {
   }
 
   handleClick = () => {
-    this.setState(state => ({ checkboxChecked: !state.checked }));
+    this.setState(state => ({ checkboxChecked: !state.checkboxChecked }));
   };
 
   handleSubmit = e => {

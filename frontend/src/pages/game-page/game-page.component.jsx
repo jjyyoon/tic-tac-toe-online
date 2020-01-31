@@ -16,7 +16,7 @@ class GamePage extends React.Component {
     const { currentUser, room } = props;
 
     this.state = {
-      socket: io("http://127.0.0.1:5000/"),
+      socket: io(),
       room,
       player: currentUser.userName,
       currentTurn: "Player 1"

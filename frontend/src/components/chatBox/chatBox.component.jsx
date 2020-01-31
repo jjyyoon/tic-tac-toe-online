@@ -12,7 +12,7 @@ class ChatBox extends React.Component {
     super(props);
 
     this.state = {
-      chat: ["Hello", "How are you today?", "What did you do yesterday?"],
+      chat: [],
       chatInput: ""
     };
 
