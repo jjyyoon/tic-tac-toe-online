@@ -179,7 +179,10 @@ def on_join(data):
         room.user1_username = username
         db.session.commit()
 
-    emit('join message', f'{username} has entered the room.', namespace='/chat', room=room_id)
+    emit('get players', {'player1': room.user1_username,
+                         'player2': room.user2_username}, namespace='/chat', room=room_id)
+    emit('join message', f'{username} has entered the room.',
+         namespace='/chat', room=room_id)
 
 
 @socketio.on('leave', namespace='/chat')
@@ -201,7 +204,8 @@ def on_leave(data):
         db.session.delete(room)
         db.session.commit()
 
-    emit('leave message', f'{username} has left the room.', namespace='/chat', room=room_id)
+    emit('leave message', f'{username} has left the room.',
+         namespace='/chat', room=room_id)
 
 
 @socketio.on('chat', namespace='/chat')

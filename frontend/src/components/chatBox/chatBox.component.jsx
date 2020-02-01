@@ -27,14 +27,9 @@ class ChatBox extends React.Component {
     chatSocket.on("join message", message => updateChat(message));
   }
 
-  componentDidMount() {
-    const { chatSocket, room, player } = this.props;
-    chatSocket.emit("join", { username: player, room });
-  }
-
   componentWillUnmount() {
-    const { chatSocket, room, player } = this.props;
-    chatSocket.emit("leave", { username: player, room });
+    const { chatSocket, room, currentUser } = this.props;
+    chatSocket.emit("leave", { username: currentUser, room });
   }
 
   /*
@@ -52,9 +47,9 @@ class ChatBox extends React.Component {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
-    const { chatSocket, room, player } = this.props;
+    const { chatSocket, room, currentUser } = this.props;
     const { chatInput } = this.state;
-    const newMessage = `${player}:　${chatInput}`;
+    const newMessage = `${currentUser}:　${chatInput}`;
     chatSocket.emit("chat", { newMessage, room });
     this.setState({ chatInput: "" });
   };
