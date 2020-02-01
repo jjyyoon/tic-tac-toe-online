@@ -143,9 +143,9 @@ def check_availability():
 
     if room:
         if room.user1_username and room.user2_username:
-            res = {'availability': 'not available'}
+            res = {'availability': False}
         else:
-            res = {'availability': 'available'}
+            res = {'availability': True}
 
     return jsonify(res)
 
@@ -164,7 +164,7 @@ def pw_check():
             return jsonify({'match': False})
 
 
-@socketio.on('join')
+@socketio.on('join', namespace='/chat')
 def on_join(data):
     username = data['username']
     room_id = data['room']
@@ -179,10 +179,10 @@ def on_join(data):
         room.user1_username = username
         db.session.commit()
 
-    emit('join message', f'{username} has entered the room.', room=room_id)
+    emit('join message', f'{username} has entered the room.', namespace='/chat', room=room_id)
 
 
-@socketio.on('leave')
+@socketio.on('leave', namespace='/chat')
 def on_leave(data):
     username = data['username']
     room_id = data['room']
@@ -201,14 +201,14 @@ def on_leave(data):
         db.session.delete(room)
         db.session.commit()
 
-    emit('leave message', f'{username} has left the room.', room=room_id)
+    emit('leave message', f'{username} has left the room.', namespace='/chat', room=room_id)
 
 
-@socketio.on('chat')
+@socketio.on('chat', namespace='/chat')
 def handle_chat(message):
     new_message = message['newMessage']
     room_id = message['room']
-    emit('load a chat', new_message, room=room_id)
+    emit('load a chat', new_message, namespace='/chat', room=room_id)
 
 
 if __name__ == '__main__':

@@ -16,21 +16,10 @@ class GamePage extends React.Component {
     const { currentUser, room } = props;
 
     this.state = {
-      socket: io(),
       room,
       player: currentUser.userName,
       currentTurn: "Player 1"
     };
-  }
-
-  componentDidMount() {
-    const { socket, room, player } = this.state;
-    socket.emit("join", { username: player, room });
-  }
-
-  componentWillUnmount() {
-    const { socket, room, player } = this.state;
-    socket.emit("leave", { username: player, room });
   }
 
   handleClick = () => {
@@ -48,7 +37,9 @@ class GamePage extends React.Component {
   };
 
   render() {
-    const { socket, room, player, currentTurn } = this.state;
+    const { room, player, currentTurn } = this.state;
+    const chatSocket = io("/chat");
+    const gameSocket = io("/game");
 
     return (
       <div className="game-page">
@@ -71,7 +62,7 @@ class GamePage extends React.Component {
               size={3}
             />
           </div>
-          <ChatBox socket={socket} room={room} player={player} />
+          <ChatBox chatSocket={chatSocket} room={room} player={player} />
         </div>
       </div>
     );

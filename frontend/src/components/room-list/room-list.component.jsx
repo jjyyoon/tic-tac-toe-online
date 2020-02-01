@@ -15,7 +15,7 @@ const RoomList = ({ children, roomId, availability, password, history }) => {
 
     if (res && res.status === 200) {
       const data = await res.json();
-      if (data.availability === "not available") {
+      if (!data.availability) {
         alert("Sorry, this room is now full :(");
         history.push("/list");
       }

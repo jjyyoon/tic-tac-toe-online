@@ -6,8 +6,7 @@ const WithAuth = WrappedComponent => {
       super(props);
       this.state = {
         userName: null,
-        userEmail: null,
-        setUser: false
+        userEmail: null
       };
     }
 
@@ -28,8 +27,7 @@ const WithAuth = WrappedComponent => {
         const data = await res.json();
         this.setState({
           userName: data.user_name,
-          userEmail: data.user_email,
-          setUser: true
+          userEmail: data.user_email
         });
       } catch (err) {
         console.log(err);
@@ -38,11 +36,11 @@ const WithAuth = WrappedComponent => {
 
     render() {
       const { history, location } = this.props;
-      const { userName, userEmail, setUser } = this.state;
+      const { userName, userEmail } = this.state;
       const currentUser = { userName, userEmail };
 
       return (
-        setUser && (
+        userName && (
           <WrappedComponent
             currentUser={currentUser}
             history={history}
