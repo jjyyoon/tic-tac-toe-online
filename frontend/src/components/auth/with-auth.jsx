@@ -6,33 +6,48 @@ const WithAuth = WrappedComponent => {
       super(props);
       this.state = {
         userName: null,
-        userEmail: null,
-        setUser: false
+        userEmail: null
       };
     }
 
     async componentDidMount() {
-      const res = await fetch("/auth");
+      try {
+        const res = await fetch("/auth");
 
-      if (res) {
-        if (res.status === 401) {
-          this.props.history.push("/signin");
-        } else {
-          const data = await res.json();
-          this.setState({
-            userName: data.user_name,
-            userEmail: data.user_email,
-            setUser: true
-          });
+        if (!res) throw new Error("Connection refused");
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.props.history.push("/signin");
+          } else {
+            throw new Error(`Error: ${res.status} ${res.statusText}`);
+          }
         }
+
+        const data = await res.json();
+        this.setState({
+          userName: data.user_name,
+          userEmail: data.user_email
+        });
+      } catch (err) {
+        console.log(err);
       }
     }
 
     render() {
-      const { userName, userEmail, setUser } = this.state;
+      const { history, location } = this.props;
+      const { userName, userEmail } = this.state;
       const currentUser = { userName, userEmail };
 
-      return setUser && <WrappedComponent currentUser={currentUser} />;
+      return (
+        userName && (
+          <WrappedComponent
+            currentUser={currentUser}
+            history={history}
+            room={location.pathname.substr(6)}
+          />
+        )
+      );
     }
   };
 };

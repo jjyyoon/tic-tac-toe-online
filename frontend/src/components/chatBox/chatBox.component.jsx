@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from "react-router";
 
 import ListContainer from "../list-container/list-container.component";
 import FormInput from "../form-input/form-input.component";
@@ -11,54 +12,50 @@ class ChatBox extends React.Component {
     super(props);
 
     this.state = {
-      chat: [
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "Hello",
-        "How are you today?",
-        "How are you today?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?",
-        "What did you do yesterday?"
-      ],
+      chat: [],
       chatInput: ""
     };
 
-    const { socket } = this.props;
-    socket.on("load a chat", msg => {
+    const updateChat = message => {
       const { chat } = this.state;
-      chat.push(msg);
+      chat.push(message);
       this.setState({ chat });
-    });
+    };
+
+    const { chatSocket } = props;
+    chatSocket.on("load a chat", message => updateChat(message));
+    chatSocket.on("join message", message => updateChat(message));
   }
+
+  componentDidMount() {
+    const { chatSocket, room, player } = this.props;
+    chatSocket.emit("join", { username: player, room });
+  }
+
+  componentWillUnmount() {
+    const { chatSocket, room, player } = this.props;
+    chatSocket.emit("leave", { username: player, room });
+  }
+
+  /*
+  I'll change the way to update this chat. (add a msg to the arr => appendChild(<p>))
+  At that time, I'll change this function as well.
 
   componentDidUpdate() {
     document
       .getElementsByClassName("list-container")[0]
       .lastChild.scrollIntoView();
   }
+  */
 
   handleSubmit = e => {
     e.preventDefault();
     document.querySelector(".form-control").value = "";
 
-    const { player, socket } = this.props;
+    const { chatSocket, room, player } = this.props;
     const { chatInput } = this.state;
     const newMessage = `${player}:　${chatInput}`;
-    socket.emit("chat", newMessage);
+    chatSocket.emit("chat", { newMessage, room });
     this.setState({ chatInput: "" });
   };
 
@@ -74,7 +71,7 @@ class ChatBox extends React.Component {
         <form className="input-group mb-3" onSubmit={this.handleSubmit}>
           <FormInput name="message" type="text" onChange={this.handleChange} />
           <div className="input-group-append">
-            <CustomButton className="btn btn-outline-secondary" type="button">
+            <CustomButton type="submit" className="btn btn-outline-secondary">
               Send
             </CustomButton>
           </div>
@@ -84,4 +81,4 @@ class ChatBox extends React.Component {
   }
 }
 
-export default ChatBox;
+export default withRouter(ChatBox);

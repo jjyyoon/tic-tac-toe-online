@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 
 import WithAuth from "../../components/auth/with-auth";
 import CustomButton from "../../components/custom-button/custom-button.component";
-import RoomList from "../../components/room-list/room-list.component";
+import RoomListContainer from "../../components/room-list-container/room-list-container.component";
 import ListContainer from "../../components/list-container/list-container.component";
+import CreateRoom from "../../components/create-room/create-room.component";
 
 import "./room-list-page.styles.scss";
 
@@ -14,10 +15,6 @@ class RoomListPage extends React.Component {
     super(props);
 
     this.state = {
-      rooms: [
-        { id: 1, name: "Let's Play!", NumOfPlayers: 1 },
-        { id: 2, name: "Enjoy the time", NumOfPlayers: 2 }
-      ],
       users: ["rui", "jiyeon", "sandra", "miguel", "mike", "julie"]
     };
   }
@@ -32,34 +29,17 @@ class RoomListPage extends React.Component {
   };
 
   render() {
-    const { rooms, users } = this.state;
+    const { users } = this.state;
+    const { currentUser } = this.props;
 
     return (
       <div className="room-list-page">
         <div className="room-list">
           <h1 className="room-list-header">Rooms</h1>
-          <CustomButton className="room-list-header">Create Room</CustomButton>
+          <CreateRoom currentUser={currentUser} />
           <button onClick={this.handleClick}>Log out</button>
           <Link to="/game">game</Link>
-          <div className="list-group">
-            {rooms.map(room =>
-              room.NumOfPlayers === 2 ? (
-                <RoomList
-                  key={room.id}
-                  buttonColor="badge-secondary"
-                  availability="Full"
-                  to="#"
-                >{`${room.name}　(${room.NumOfPlayers}/2)`}</RoomList>
-              ) : (
-                <RoomList
-                  key={room.id}
-                  buttonColor="badge-warning"
-                  availability="Join"
-                  to={`room/${room.id}`}
-                >{`${room.name}　(${room.NumOfPlayers}/2)`}</RoomList>
-              )
-            )}
-          </div>
+          <RoomListContainer />
         </div>
         <div className="user-list">
           <h1>Player Online</h1>

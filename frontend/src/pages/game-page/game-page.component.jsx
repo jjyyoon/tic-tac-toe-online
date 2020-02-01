@@ -3,6 +3,7 @@ import { withRouter } from "react-router";
 import io from "socket.io-client";
 
 import WithAuth from "../../components/auth/with-auth";
+import CustomButton from "../../components/custom-button/custom-button.component";
 import Grid from "../../components/grid/grid.component";
 import ChatBox from "../../components/chatBox/chatBox.component";
 
@@ -12,19 +13,19 @@ class GamePage extends React.Component {
   constructor(props) {
     super(props);
 
-    const { userName } = props.currentUser;
+    const { currentUser, room } = props;
 
     this.state = {
-      player: userName,
-      currentTurn: "Player 1",
-      socket: io("http://127.0.0.1:5000/")
+      room,
+      player: currentUser.userName,
+      currentTurn: "Player 1"
     };
   }
 
-  componentDidMount() {
-    console.log(this.props.currentUser.userName);
-    console.log(this.state.player);
-  }
+  handleClick = () => {
+    const { history } = this.props;
+    history.push("/list");
+  };
 
   changeTurn = () => {
     const { currentTurn } = this.state;
@@ -36,10 +37,15 @@ class GamePage extends React.Component {
   };
 
   render() {
-    const { player, currentTurn, socket } = this.state;
+    const { room, player, currentTurn } = this.state;
+    const chatSocket = io("/chat");
+    const gameSocket = io("/game");
 
     return (
       <div className="game-page">
+        <CustomButton type="button" onClick={this.handleClick}>
+          Leave
+        </CustomButton>
         <div className="player">
           <div>Player 1</div>
           <div>Player 2</div>
@@ -56,7 +62,7 @@ class GamePage extends React.Component {
               size={3}
             />
           </div>
-          <ChatBox player={player} socket={socket} />
+          <ChatBox chatSocket={chatSocket} room={room} player={player} />
         </div>
       </div>
     );

@@ -53,7 +53,10 @@ class SignIn extends React.Component {
             type="password"
             onChange={this.handleChange}
           />
-          <CustomButton className="btn btn-lg btn-primary btn-block">
+          <CustomButton
+            type="submit"
+            className="btn btn-lg btn-primary btn-block"
+          >
             Sign In
           </CustomButton>
         </form>

@@ -2,7 +2,8 @@ from flask import Flask, render_template, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit, join_room, leave_room
+from uuid import uuid4
 
 from models.database import db
 from models.user import User
@@ -94,16 +95,120 @@ def logout():
 
 
 @app.route('/list')
-@app.route('/game')
 @jwt_required
 def list():
     return render_template('index.html')
 
 
-@socketio.on('chat')
+@app.route('/game/<uuid:room_id>')
+@jwt_required
+def game(room_id):
+    return render_template('index.html')
+
+
+@app.route('/createroom', methods=['POST'])
+def create_room():
+    room_id = uuid4()
+    name = request.get_json()['roomName'],
+    password = request.get_json()['roomPassword']
+    user_name = request.get_json()['userName']
+
+    pw_hash = password
+
+    if password:
+        pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
+
+    new_room = Room(id=room_id, name=name,
+                    password=pw_hash, user1_username=user_name)
+    db.session.add(new_room)
+    db.session.commit()
+
+    return jsonify({'room_id': room_id}), 200
+
+
+@app.route('/loadrooms')
+def load_rooms():
+    rooms = Room.query.all()
+    res = {'rooms': []}
+    for room in rooms:
+        res['rooms'].append({'id': room.id, 'name': room.name, 'password': room.password,
+                             'user1': room.user1_username, 'user2': room.user2_username})
+    return jsonify(res)
+
+
+@app.route('/check_availability', methods=['POST'])
+def check_availability():
+    room_id = request.get_json()['roomId']
+    room = Room.query.filter_by(id=room_id).first()
+
+    if room:
+        if room.user1_username and room.user2_username:
+            res = {'availability': False}
+        else:
+            res = {'availability': True}
+
+    return jsonify(res)
+
+
+@app.route('/pwcheck', methods=['POST'])
+def pw_check():
+    room_id = request.get_json()['roomId']
+    password = request.get_json()['password']
+
+    room = Room.query.filter_by(id=room_id).first()
+
+    if room:
+        if bcrypt.check_password_hash(room.password, password):
+            return jsonify({'match': True})
+        else:
+            return jsonify({'match': False})
+
+
+@socketio.on('join', namespace='/chat')
+def on_join(data):
+    username = data['username']
+    room_id = data['room']
+    join_room(room_id)
+
+    room = Room.query.filter_by(id=room_id).first()
+
+    if room.user1_username and room.user1_username != username:
+        room.user2_username = username
+        db.session.commit()
+    elif room.user2_username:
+        room.user1_username = username
+        db.session.commit()
+
+    emit('join message', f'{username} has entered the room.', namespace='/chat', room=room_id)
+
+
+@socketio.on('leave', namespace='/chat')
+def on_leave(data):
+    username = data['username']
+    room_id = data['room']
+    leave_room(room_id)
+
+    room = Room.query.filter_by(id=room_id).first()
+
+    if room.user1_username == username:
+        room.user1_username = None
+        db.session.commit()
+    elif room.user2_username == username:
+        room.user2_username = None
+        db.session.commit()
+
+    if room.user1_username is None and room.user2_username is None:
+        db.session.delete(room)
+        db.session.commit()
+
+    emit('leave message', f'{username} has left the room.', namespace='/chat', room=room_id)
+
+
+@socketio.on('chat', namespace='/chat')
 def handle_chat(message):
-    print(message)
-    socketio.emit('load a chat', message, broadcast=True)
+    new_message = message['newMessage']
+    room_id = message['room']
+    emit('load a chat', new_message, namespace='/chat', room=room_id)
 
 
 if __name__ == '__main__':
