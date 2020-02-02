@@ -201,11 +201,6 @@ def user_connect():
 def user_disconnect():
     user_name = get_jwt_identity()
     user_offline(user_name)
-    # user = User.query.filter_by(username=user_name).first()
-    # user.online = False
-    # db.session.commit()
-
-    # emit('user is offline', user.username, namespace='/chat', broadcast=True)
 
 
 @socketio.on('join', namespace='/chat')
