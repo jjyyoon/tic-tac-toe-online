@@ -87,8 +87,18 @@ def auth():
     return jsonify(res), 200
 
 
+def user_offline(current_user):
+    user = User.query.filter_by(username=current_user).first()
+    user.online = False
+    db.session.commit()
+
+    emit('user is offline', user.username, namespace='/chat', broadcast=True)
+
+
 @app.route('/logout', methods=['POST'])
 def logout():
+    user_name = request.get_json()['userName']
+    user_offline(user_name)
     res = jsonify({})
     unset_jwt_cookies(res)
     return res, 200
@@ -136,6 +146,16 @@ def load_rooms():
     return jsonify(res)
 
 
+@app.route('/loadusers')
+def load_users():
+    users_online = User.query.filter_by(online=True).all()
+    res = {'user_online': {}}
+    for user in users_online:
+        res['user_online'][user.username] = {
+            'user_name': user.username, 'user_email': user.email}
+    return jsonify(res)
+
+
 @app.route('/check_availability', methods=['POST'])
 def check_availability():
     room_id = request.get_json()['roomId']
@@ -162,6 +182,25 @@ def pw_check():
             return jsonify({'match': True})
         else:
             return jsonify({'match': False})
+
+
+@socketio.on('connect', namespace='/chat')
+@jwt_required
+def user_connect():
+    user_name = get_jwt_identity()
+    user = User.query.filter_by(username=user_name).first()
+    user.online = True
+    db.session.commit()
+
+    emit('user is online', {'user_name': user.username,
+                            'user_email': user.email}, namespace='/chat', broadcast=True)
+
+
+@socketio.on('disconnect', namespace='/chat')
+@jwt_required
+def user_disconnect():
+    user_name = get_jwt_identity()
+    user_offline(user_name)
 
 
 @socketio.on('join', namespace='/chat')
