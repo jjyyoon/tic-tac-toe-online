@@ -87,8 +87,18 @@ def auth():
     return jsonify(res), 200
 
 
+def user_offline(current_user):
+    user = User.query.filter_by(username=current_user).first()
+    user.online = False
+    db.session.commit()
+
+    emit('user is offline', user.username, namespace='/chat', broadcast=True)
+
+
 @app.route('/logout', methods=['POST'])
 def logout():
+    user_name = request.get_json()['userName']
+    user_offline(user_name)
     res = jsonify({})
     unset_jwt_cookies(res)
     return res, 200
@@ -190,11 +200,12 @@ def user_connect():
 @jwt_required
 def user_disconnect():
     user_name = get_jwt_identity()
-    user = User.query.filter_by(username=user_name).first()
-    user.online = False
-    db.session.commit()
+    user_offline(user_name)
+    # user = User.query.filter_by(username=user_name).first()
+    # user.online = False
+    # db.session.commit()
 
-    emit('user is offline', user.username, namespace='/chat', broadcast=True)
+    # emit('user is offline', user.username, namespace='/chat', broadcast=True)
 
 
 @socketio.on('join', namespace='/chat')

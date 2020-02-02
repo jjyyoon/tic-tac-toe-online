@@ -1,4 +1,4 @@
-export const handleFetch = async (url, exceptionStatus = null, obj = null) => {
+export const handleFetch = async (url, obj = null, exceptionStatus = null) => {
   try {
     let res;
 

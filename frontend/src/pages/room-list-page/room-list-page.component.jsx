@@ -16,7 +16,7 @@ class RoomListPage extends React.Component {
     super(props);
 
     this.state = {
-      users: []
+      users: {}
     };
 
     const { chatSocket } = props;
@@ -40,12 +40,16 @@ class RoomListPage extends React.Component {
   }
 
   handleClick = () => {
-    fetch("/logout", { method: "POST" })
-      .then(res => res.json())
-      .then(data => {
-        this.props.history.push("/");
-      })
-      .catch(err => console.log(err));
+    const { currentUser, history } = this.props;
+    const settings = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName: currentUser.userName })
+    };
+
+    handleFetch("/logout", settings).then(() => {
+      history.push("/");
+    });
   };
 
   render() {
@@ -58,7 +62,7 @@ class RoomListPage extends React.Component {
         <div className="room-list">
           <h1 className="room-list-header">Rooms</h1>
           <CreateRoom currentUser={currentUser} />
-          <button onClick={this.handleClick}>Log out</button>
+          <CustomButton onClick={this.handleClick}>Log out</CustomButton>
           <Link to="/game">game</Link>
           <RoomListContainer />
         </div>
