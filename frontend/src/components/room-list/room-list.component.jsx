@@ -24,17 +24,17 @@ const RoomList = ({ children, roomId, availability, password, history }) => {
 
   return (
     <li className="list-group-item d-flex justify-content-between align-items-center">
-      {`${children}　(${availability === "Full" ? "2" : "1"}/2)`}
+      {children}
       <div className={password ? "dropdown" : null}>
         <Link
           to={`/game/${roomId}`}
           className={`badge ${
-            availability === "Full" ? "badge-secondary" : "badge-warning"
+            availability ? "badge-warning" : "badge-secondary"
           }`}
           data-toggle={password ? "dropdown" : null}
           onClick={handleClick}
         >
-          {availability}
+          {availability ? "Join" : "Full"}
         </Link>
         {password ? (
           <PwDropdown roomId={roomId} handleJoin={handleClick} />
