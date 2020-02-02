@@ -136,6 +136,16 @@ def load_rooms():
     return jsonify(res)
 
 
+@app.route('/loadusers')
+def load_users():
+    users_online = User.query.filter_by(online=True).all()
+    res = {'user_online': {}}
+    for user in users_online:
+        res['user_online'][user.username] = {
+            'user_name': user.username, 'user_email': user.email}
+    return jsonify(res)
+
+
 @app.route('/check_availability', methods=['POST'])
 def check_availability():
     room_id = request.get_json()['roomId']
@@ -164,6 +174,29 @@ def pw_check():
             return jsonify({'match': False})
 
 
+@socketio.on('connect', namespace='/chat')
+@jwt_required
+def user_connect():
+    user_name = get_jwt_identity()
+    user = User.query.filter_by(username=user_name).first()
+    user.online = True
+    db.session.commit()
+
+    emit('user is online', {'user_name': user.username,
+                            'user_email': user.email}, namespace='/chat', broadcast=True)
+
+
+@socketio.on('disconnect', namespace='/chat')
+@jwt_required
+def user_disconnect():
+    user_name = get_jwt_identity()
+    user = User.query.filter_by(username=user_name).first()
+    user.online = False
+    db.session.commit()
+
+    emit('user is offline', user.username, namespace='/chat', broadcast=True)
+
+
 @socketio.on('join', namespace='/chat')
 def on_join(data):
     username = data['username']
@@ -179,7 +212,8 @@ def on_join(data):
         room.user1_username = username
         db.session.commit()
 
-    emit('join message', f'{username} has entered the room.', namespace='/chat', room=room_id)
+    emit('join message', f'{username} has entered the room.',
+         namespace='/chat', room=room_id)
 
 
 @socketio.on('leave', namespace='/chat')
@@ -201,7 +235,8 @@ def on_leave(data):
         db.session.delete(room)
         db.session.commit()
 
-    emit('leave message', f'{username} has left the room.', namespace='/chat', room=room_id)
+    emit('leave message', f'{username} has left the room.',
+         namespace='/chat', room=room_id)
 
 
 @socketio.on('chat', namespace='/chat')

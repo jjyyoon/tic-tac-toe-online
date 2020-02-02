@@ -2,6 +2,7 @@ import React from "react";
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 
+import { handleFetch } from "../../handle-fetch";
 import WithAuth from "../../components/auth/with-auth";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import RoomListContainer from "../../components/room-list-container/room-list-container.component";
@@ -15,8 +16,27 @@ class RoomListPage extends React.Component {
     super(props);
 
     this.state = {
-      users: ["rui", "jiyeon", "sandra", "miguel", "mike", "julie"]
+      users: []
     };
+
+    const { chatSocket } = props;
+    chatSocket.on("user is online", ({ user_name, user_email }) => {
+      const { users } = this.state;
+      users[user_name] = { user_name, user_email };
+      this.setState({ users });
+    });
+
+    chatSocket.on("user is offline", user_name => {
+      const { users } = this.state;
+      delete users[user_name];
+      this.setState({ users });
+    });
+  }
+
+  componentDidMount() {
+    handleFetch("/loadusers").then(({ data }) =>
+      this.setState({ users: data.user_online })
+    );
   }
 
   handleClick = () => {
@@ -31,6 +51,7 @@ class RoomListPage extends React.Component {
   render() {
     const { users } = this.state;
     const { currentUser } = this.props;
+    const userNames = Object.keys(users);
 
     return (
       <div className="room-list-page">
@@ -43,7 +64,7 @@ class RoomListPage extends React.Component {
         </div>
         <div className="user-list">
           <h1>Player Online</h1>
-          <ListContainer arr={users} />
+          {userNames.length !== 0 ? <ListContainer arr={userNames} /> : null}
         </div>
       </div>
     );
