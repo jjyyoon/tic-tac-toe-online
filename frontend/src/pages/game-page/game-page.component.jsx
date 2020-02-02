@@ -16,10 +16,24 @@ class GamePage extends React.Component {
     const { currentUser, room } = props;
 
     this.state = {
+      chatSocket: io("/chat"),
+      gameSocket: io("/game"),
+      currentUser: currentUser.userName,
       room,
-      player: currentUser.userName,
+      player1: null,
+      player2: null,
       currentTurn: "Player 1"
     };
+
+    const { chatSocket } = this.state;
+    chatSocket.on("get players", ({ player1, player2 }) => {
+      this.setState({ player1, player2 });
+    });
+  }
+
+  componentDidMount() {
+    const { chatSocket, currentUser, room } = this.state;
+    chatSocket.emit("join", { username: currentUser, room });
   }
 
   handleClick = () => {
@@ -37,9 +51,14 @@ class GamePage extends React.Component {
   };
 
   render() {
-    const { room, player, currentTurn } = this.state;
-    const chatSocket = io("/chat");
-    const gameSocket = io("/game");
+    const {
+      chatSocket,
+      currentUser,
+      room,
+      player1,
+      player2,
+      currentTurn
+    } = this.state;
 
     return (
       <div className="game-page">
@@ -47,8 +66,14 @@ class GamePage extends React.Component {
           Leave
         </CustomButton>
         <div className="player">
-          <div>Player 1</div>
-          <div>Player 2</div>
+          <div>
+            <h6>Player 1</h6>
+            {player1 ? <p>{player1}</p> : null}
+          </div>
+          <div>
+            <h6>Player 2</h6>
+            {player2 ? <p>{player2}</p> : null}
+          </div>
         </div>
 
         <div className="main">
@@ -56,13 +81,17 @@ class GamePage extends React.Component {
             <h1 className="current-turn">{`${currentTurn} Turn`}</h1>
 
             <Grid
-              player={player}
+              player={currentUser}
               currentTurn={currentTurn}
               changeTurn={this.changeTurn}
               size={3}
             />
           </div>
-          <ChatBox chatSocket={chatSocket} room={room} player={player} />
+          <ChatBox
+            chatSocket={chatSocket}
+            room={room}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     );
