@@ -1,10 +1,12 @@
 import React from "react";
+import io from "socket.io-client";
 
 const WithAuth = WrappedComponent => {
   return class extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
+        chatSocket: io("/chat"),
         userName: null,
         userEmail: null
       };
@@ -36,12 +38,13 @@ const WithAuth = WrappedComponent => {
 
     render() {
       const { history, location } = this.props;
-      const { userName, userEmail } = this.state;
+      const { chatSocket, userName, userEmail } = this.state;
       const currentUser = { userName, userEmail };
 
       return (
         userName && (
           <WrappedComponent
+            chatSocket={chatSocket}
             currentUser={currentUser}
             history={history}
             room={location.pathname.substr(6)}
