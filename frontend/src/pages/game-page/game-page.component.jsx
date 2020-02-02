@@ -71,7 +71,6 @@ class GamePage extends React.Component {
             {player1 ? <p>{player1}</p> : null}
           </div>
           <div>
-            {" "}
             <h6>Player 2</h6>
             {player2 ? <p>{player2}</p> : null}
           </div>

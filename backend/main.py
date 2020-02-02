@@ -1,8 +1,9 @@
 from flask import Flask, render_template, jsonify, request
-from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
+from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
+from sqlalchemy import or_
 from uuid import uuid4
 
 from models.database import db
@@ -93,6 +94,24 @@ def user_offline(current_user):
     db.session.commit()
 
     emit('user is offline', user.username, namespace='/chat', broadcast=True)
+
+
+def get_players(room):
+    emit('get players', {'player1': room.user1_username,
+                         'player2': room.user2_username}, namespace='/chat', room=room.id)
+
+
+def delete_user_from_room(room, current_user):
+    if room.user1_username == current_user:
+        room.user1_username = None
+        db.session.commit()
+    else:
+        room.user2_username = None
+        db.session.commit()
+
+    emit('leave message', f'{current_user} has left the room.',
+         namespace='/chat', room=room.id)
+    get_players(room)
 
 
 @app.route('/logout', methods=['POST'])
@@ -202,6 +221,12 @@ def user_disconnect():
     user_name = get_jwt_identity()
     user_offline(user_name)
 
+    rooms = Room.query.filter(
+        or_(Room.user1_username == user_name, Room.user2_username == user_name)).all()
+
+    for room in rooms:
+        delete_user_from_room(room, user_name)
+
 
 @socketio.on('join', namespace='/chat')
 def on_join(data):
@@ -211,15 +236,15 @@ def on_join(data):
 
     room = Room.query.filter_by(id=room_id).first()
 
-    if room.user1_username and room.user1_username != username:
-        room.user2_username = username
-        db.session.commit()
-    elif room.user2_username:
-        room.user1_username = username
-        db.session.commit()
+    if room.user1_username != username or room.user2_username != username:
+        if room.user1_username is None or room.user2_username:
+            room.user1_username = username
+            db.session.commit()
+        else:
+            room.user2_username = username
+            db.session.commit()
 
-    emit('get players', {'player1': room.user1_username,
-                         'player2': room.user2_username}, namespace='/chat', room=room_id)
+    get_players(room)
     emit('join message', f'{username} has entered the room.',
          namespace='/chat', room=room_id)
 
@@ -231,20 +256,7 @@ def on_leave(data):
     leave_room(room_id)
 
     room = Room.query.filter_by(id=room_id).first()
-
-    if room.user1_username == username:
-        room.user1_username = None
-        db.session.commit()
-    elif room.user2_username == username:
-        room.user2_username = None
-        db.session.commit()
-
-    if room.user1_username is None and room.user2_username is None:
-        db.session.delete(room)
-        db.session.commit()
-
-    emit('leave message', f'{username} has left the room.',
-         namespace='/chat', room=room_id)
+    delete_user_from_room(room, username)
 
 
 @socketio.on('chat', namespace='/chat')

@@ -25,6 +25,7 @@ class ChatBox extends React.Component {
     const { chatSocket } = props;
     chatSocket.on("load a chat", message => updateChat(message));
     chatSocket.on("join message", message => updateChat(message));
+    chatSocket.on("leave message", message => updateChat(message));
   }
 
   componentWillUnmount() {
