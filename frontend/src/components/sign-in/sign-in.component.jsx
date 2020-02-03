@@ -1,6 +1,8 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { handleFetch } from "../../handle-fetch";
+
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
@@ -10,49 +12,44 @@ class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: ""
+      err: null
     };
   }
 
-  handleChange = e => {
-    let { name, value } = e.target;
-    this.setState({ [name]: value });
-  };
-
   handleSubmit = e => {
     e.preventDefault();
-    const { email, password } = this.state;
-    fetch("/login", {
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
-    })
-      .then(() => {
+    };
+
+    handleFetch("/login", settings).then(({ data }) => {
+      if (data.user_name) {
         this.props.history.push("/list");
-      })
-      .catch(err => console.log(err));
+      } else {
+        this.setState({
+          err: "*Invalid email or password, please try again"
+        });
+      }
+    });
   };
 
   render() {
+    const { err } = this.state;
+
     return (
       <div className="sign-in">
         <h3>I already have an account</h3>
         <span>Sign in with your email and password</span>
 
         <form onSubmit={this.handleSubmit}>
-          <FormInput
-            label="Email Address"
-            name="email"
-            type="email"
-            onChange={this.handleChange}
-          />
-          <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            onChange={this.handleChange}
-          />
+          <FormInput label="Email Address" name="email" type="email" />
+          <FormInput label="Password" name="password" type="password" />
+          {err ? <p className="error">{err}</p> : null}
           <CustomButton
             type="submit"
             className="btn btn-lg btn-primary btn-block"

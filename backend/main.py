@@ -47,21 +47,26 @@ def my_unauthorized_callback(err_str):
 def register():
     username = request.get_json()['userName'],
     email = request.get_json()['email']
+
+    existing_user1 = User.query.filter_by(username=username).first()
+    existing_user2 = User.query.filter_by(email=email).first()
+
+    if existing_user1:
+        return jsonify({'user_name': None, 'err': "username"})
+    elif existing_user2:
+        return jsonify({'user_name': None, 'err': "email"})
+
     password = request.get_json()['password']
-
     pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
-
-    # Add func to prevent a user from using a username that already exists.
 
     new_user = User(username=username, email=email, password=pw_hash)
     db.session.add(new_user)
     db.session.commit()
 
     access_token = create_access_token(identity=new_user)
-    res = jsonify({'user_name': new_user.username,
-                   'user_email': new_user.email})
-    set_access_cookies(res, access_token)
-    return res, 200
+    data = jsonify({'user_name': new_user.username, 'user_email': new_user.email})
+    set_access_cookies(data, access_token)
+    return data, 200
 
 
 @app.route('/login', methods=['POST'])
@@ -73,9 +78,11 @@ def login():
 
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=user)
-        res = jsonify({'user_name': user.username, 'user_email': user.email})
-        set_access_cookies(res, access_token)
-        return res, 200
+        data = jsonify({'user_name': user.username, 'user_email': user.email})
+        set_access_cookies(data, access_token)
+        return data, 200
+    else:
+        return jsonify({'user_name': None})
 
 
 @app.route('/auth', methods=['GET'])
