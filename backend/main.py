@@ -103,7 +103,8 @@ def get_players(room):
 
 def delete_user_from_room(room, current_user):
     if room.user1_username == current_user:
-        room.user1_username = None
+        room.user1_username = room.user2_username
+        room.user2_username = None
         db.session.commit()
     else:
         room.user2_username = None
@@ -147,8 +148,7 @@ def create_room():
     if password:
         pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
 
-    new_room = Room(id=room_id, name=name,
-                    password=pw_hash, user1_username=user_name)
+    new_room = Room(id=room_id, name=name, password=pw_hash)
     db.session.add(new_room)
     db.session.commit()
 
