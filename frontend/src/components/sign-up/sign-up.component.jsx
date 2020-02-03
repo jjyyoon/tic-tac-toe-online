@@ -1,6 +1,8 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { handleFetch } from "../../handle-fetch";
+
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
@@ -10,34 +12,54 @@ class SignUp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
+      errUserName: null,
+      errEmail: null,
+      errPassword: null
     };
   }
 
-  handleChange = e => {
-    let { name, value } = e.target;
-    this.setState({ [name]: value });
-  };
-
   handleSubmit = e => {
     e.preventDefault();
-    const { userName, email, password, confirmPassword } = this.state;
+    this.setState({ errUserName: null, errEmail: null, errPassword: null });
+    const userName = e.target.userName.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
 
-    fetch("/register", {
+    if (password !== confirmPassword) {
+      this.setState({
+        errPassword: "*Those passwords didn't match, please try again."
+      });
+      document.getElementById("sign-up-password").value = "";
+      return;
+    }
+
+    const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userName, email, password })
-    })
-      .then(() => {
+    };
+
+    handleFetch("/register", settings).then(({ data }) => {
+      if (data.user_name) {
         this.props.history.push("/list");
-      })
-      .catch(err => console.log(err));
+        return;
+      }
+
+      if (data.err === "username") {
+        this.setState({
+          errUserName: "*This username is taken, please try another."
+        });
+      } else {
+        this.setState({
+          errEmail: "*This email is taken, please try another."
+        });
+      }
+    });
   };
 
   render() {
+    const { errUserName, errEmail, errPassword } = this.state;
     return (
       <div className="sign-up">
         <h3>I don't have an account</h3>
@@ -45,29 +67,27 @@ class SignUp extends React.Component {
 
         <form onSubmit={this.handleSubmit}>
           <FormInput
+            id="sign-up-username"
             label="User Name"
             name="userName"
             type="text"
-            onChange={this.handleChange}
           />
+          {errUserName ? <p className="error">{errUserName}</p> : null}
           <FormInput
+            id="sign-up-email"
             label="Email Address"
             name="email"
             type="email"
-            onChange={this.handleChange}
           />
+          {errEmail ? <p className="error">{errEmail}</p> : null}
+          <FormInput label="Password" name="password" type="password" />
           <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            onChange={this.handleChange}
-          />
-          <FormInput
+            id="sign-up-password"
             label="Confirm Password"
             name="confirmPassword"
             type="password"
-            onChange={this.handleChange}
           />
+          {errPassword ? <p className="error">{errPassword}</p> : null}
           <CustomButton
             type="submit"
             className="btn btn-lg btn-primary btn-block"
