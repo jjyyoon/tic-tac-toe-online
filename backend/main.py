@@ -109,9 +109,21 @@ def get_players(room):
                          'player2': room.user2_username}, namespace='/chat', room=room.id)
 
 
+def frontend_room_info(room):
+    room_info = {'id': room.id, 'name': room.name,
+                 'user1': room.user1_username, 'user2': room.user2_username}
+
+    if room.password:
+        room_info['password'] = True,
+    else:
+        room_info['password'] = False
+
+    return room_info
+
+
 def update_rooms(room):
-    emit('update rooms', {'id': room.id, 'name': room.name, 'password': room.password,
-                          'user1': room.user1_username, 'user2': room.user2_username}, namespace='/chat', broadcast=True)
+    room_info = frontend_room_info(room)
+    emit('update rooms', room_info, namespace='/chat', broadcast=True)
 
 
 def delete_user_from_room(room, current_user):
@@ -174,8 +186,8 @@ def load_rooms():
     rooms = Room.query.all()
     res = {'rooms': []}
     for room in rooms:
-        res['rooms'].append({'id': room.id, 'name': room.name, 'password': room.password,
-                             'user1': room.user1_username, 'user2': room.user2_username})
+        room_info = frontend_room_info(room)
+        res['rooms'].append(room_info)
     return jsonify(res)
 
 
