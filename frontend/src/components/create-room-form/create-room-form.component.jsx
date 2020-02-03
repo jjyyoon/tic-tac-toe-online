@@ -36,7 +36,8 @@ class CreateRoomForm extends React.Component {
     })
       .then(res => res.json())
       .then(data => {
-        const { history } = this.props;
+        const { chatSocket, history } = this.props;
+        chatSocket.emit("room created", { roomId: data.room_id });
         history.push(`/game/${data.room_id}`);
       })
       .catch(err => console.log(err));

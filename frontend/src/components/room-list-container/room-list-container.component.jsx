@@ -10,6 +10,19 @@ class RoomListContainer extends React.Component {
     this.state = {
       rooms: []
     };
+
+    const { chatSocket } = props;
+
+    chatSocket.on("update rooms", updatedRoom => {
+      const { rooms } = this.state;
+      const idx = rooms.findIndex(room => room.id === updatedRoom.id);
+      if (idx === -1) {
+        rooms.push(updatedRoom);
+      } else {
+        rooms[idx] = updatedRoom;
+      }
+      this.setState({ rooms });
+    });
   }
 
   componentDidMount() {

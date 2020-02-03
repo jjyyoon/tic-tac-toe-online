@@ -54,17 +54,17 @@ class RoomListPage extends React.Component {
 
   render() {
     const { users } = this.state;
-    const { currentUser } = this.props;
+    const { chatSocket, currentUser } = this.props;
     const userNames = Object.keys(users);
 
     return (
       <div className="room-list-page">
         <div className="room-list">
           <h1 className="room-list-header">Rooms</h1>
-          <CreateRoom currentUser={currentUser} />
+          <CreateRoom chatSocket={chatSocket} currentUser={currentUser} />
           <CustomButton onClick={this.handleClick}>Log out</CustomButton>
           <Link to="/game">game</Link>
-          <RoomListContainer />
+          <RoomListContainer chatSocket={chatSocket} />
         </div>
         <div className="user-list">
           <h1>Player Online</h1>
