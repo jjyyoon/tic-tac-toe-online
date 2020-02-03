@@ -26,7 +26,7 @@ class GamePage extends React.Component {
     };
 
     const { chatSocket } = this.state;
-    chatSocket.on("get players", ({ player1, player2 }) => {
+    chatSocket.on("update players", ({ player1, player2 }) => {
       this.setState({ player1, player2 });
     });
   }
