@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import CreateRoomForm from "../create-room-form/create-room-form.component";
 
-const CreateRoom = ({ currentUser }) => {
+const CreateRoom = ({ chatSocket, currentUser }) => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -20,7 +20,7 @@ const CreateRoom = ({ currentUser }) => {
           <Modal.Title>Create a Room</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CreateRoomForm currentUser={currentUser} />
+          <CreateRoomForm chatSocket={chatSocket} currentUser={currentUser} />
         </Modal.Body>
         <Modal.Footer>
           <Button

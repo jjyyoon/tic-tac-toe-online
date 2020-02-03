@@ -64,7 +64,8 @@ def register():
     db.session.commit()
 
     access_token = create_access_token(identity=new_user)
-    data = jsonify({'user_name': new_user.username, 'user_email': new_user.email})
+    data = jsonify({'user_name': new_user.username,
+                    'user_email': new_user.email})
     set_access_cookies(data, access_token)
     return data, 200
 
@@ -108,6 +109,11 @@ def get_players(room):
                          'player2': room.user2_username}, namespace='/chat', room=room.id)
 
 
+def update_rooms(room):
+    emit('update rooms', {'id': room.id, 'name': room.name, 'password': room.password,
+                          'user1': room.user1_username, 'user2': room.user2_username}, namespace='/chat', broadcast=True)
+
+
 def delete_user_from_room(room, current_user):
     if room.user1_username == current_user:
         room.user1_username = room.user2_username
@@ -120,6 +126,7 @@ def delete_user_from_room(room, current_user):
     emit('leave message', f'{current_user} has left the room.',
          namespace='/chat', room=room.id)
     get_players(room)
+    update_rooms(room)
 
 
 @app.route('/logout', methods=['POST'])
@@ -251,6 +258,7 @@ def on_join(data):
             room.user2_username = username
             db.session.commit()
 
+    update_rooms(room)
     get_players(room)
     emit('join message', f'{username} has entered the room.',
          namespace='/chat', room=room_id)
@@ -264,6 +272,14 @@ def on_leave(data):
 
     room = Room.query.filter_by(id=room_id).first()
     delete_user_from_room(room, username)
+
+
+@socketio.on('room created', namespace='/chat')
+def room_created(data):
+    room_id = data['roomId']
+    room = Room.query.filter_by(id=room_id).first()
+
+    update_rooms(room)
 
 
 @socketio.on('chat', namespace='/chat')
