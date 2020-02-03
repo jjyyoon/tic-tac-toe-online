@@ -11,7 +11,6 @@ const HomePage = () => (
       alt=""
     />
     <Link to="/signin">SIGN IN or SIGN UP</Link>
-    <Link to="/game">Play Game</Link>
   </div>
 );
 

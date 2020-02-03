@@ -63,7 +63,6 @@ class RoomListPage extends React.Component {
           <h1 className="room-list-header">Rooms</h1>
           <CreateRoom chatSocket={chatSocket} currentUser={currentUser} />
           <CustomButton onClick={this.handleClick}>Log out</CustomButton>
-          <Link to="/game">game</Link>
           <RoomListContainer chatSocket={chatSocket} />
         </div>
         <div className="user-list">
