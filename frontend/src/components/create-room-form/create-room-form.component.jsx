@@ -1,6 +1,8 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { handleFetch } from "../../handle-fetch";
+
 import "./create-room-form.styles.scss";
 
 class CreateRoomForm extends React.Component {
@@ -29,18 +31,17 @@ class CreateRoomForm extends React.Component {
       room = { roomName, roomPassword: null, userName };
     }
 
-    fetch("/createroom", {
+    const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(room)
-    })
-      .then(res => res.json())
-      .then(data => {
-        const { chatSocket, history } = this.props;
-        chatSocket.emit("room created", { roomId: data.room_id });
-        history.push(`/game/${data.room_id}`);
-      })
-      .catch(err => console.log(err));
+    };
+
+    handleFetch("/createroom", settings).then(({ data }) => {
+      const { chatSocket, history } = this.props;
+      chatSocket.emit("room created", { roomId: data.room_id });
+      history.push(`/game/${data.room_id}`);
+    });
   };
 
   render() {

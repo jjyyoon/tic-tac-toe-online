@@ -1,28 +1,30 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { handleFetch } from "../../handle-fetch";
+
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
 const PwDropdown = ({ roomId, handleJoin, history }) => {
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
     const password = e.target.password.value;
-    const res = await fetch("/pwcheck", {
+
+    const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ roomId, password })
-    });
+    };
 
-    if (res && res.status === 200) {
-      const data = await res.json();
+    handleFetch("/pwcheck", settings).then(({ data }) => {
       if (data.match) {
         handleJoin();
         history.push(`/game/${roomId}`);
       } else {
         alert("Wrong password for this room!");
       }
-    }
+    });
   };
 
   return (

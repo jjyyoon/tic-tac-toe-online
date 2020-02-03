@@ -1,6 +1,8 @@
 import React from "react";
 import io from "socket.io-client";
 
+import { handleFetch } from "../../handle-fetch";
+
 const WithAuth = WrappedComponent => {
   return class extends React.Component {
     constructor(props) {
@@ -12,28 +14,18 @@ const WithAuth = WrappedComponent => {
       };
     }
 
-    async componentDidMount() {
-      try {
-        const res = await fetch("/auth");
-
-        if (!res) throw new Error("Connection refused");
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            this.props.history.push("/signin");
-          } else {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+    componentDidMount() {
+      handleFetch("/auth", null, 401).then(({ data }) => {
+        if (!data) {
+          alert("You are not authorized to view this page, please sign in.");
+          this.props.history.push("/signin");
+        } else {
+          this.setState({
+            userName: data.user_name,
+            userEmail: data.user_email
+          });
         }
-
-        const data = await res.json();
-        this.setState({
-          userName: data.user_name,
-          userEmail: data.user_email
-        });
-      } catch (err) {
-        console.log(err);
-      }
+      });
     }
 
     render() {
