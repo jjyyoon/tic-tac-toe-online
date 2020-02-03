@@ -1,5 +1,7 @@
 import React from "react";
 
+import { handleFetch } from "../../handle-fetch";
+
 import RoomList from "../../components/room-list/room-list.component";
 
 import "./room-list-container.styles.scss";
@@ -26,10 +28,9 @@ class RoomListContainer extends React.Component {
   }
 
   componentDidMount() {
-    fetch("/loadrooms")
-      .then(res => res.json())
-      .then(data => this.setState({ rooms: data.rooms }))
-      .catch(err => console.log(err));
+    handleFetch("/loadrooms").then(({ data }) =>
+      this.setState({ rooms: data.rooms })
+    );
   }
 
   render() {

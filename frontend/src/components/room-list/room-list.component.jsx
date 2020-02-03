@@ -2,24 +2,26 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 
+import { handleFetch } from "../../handle-fetch";
+
 import PwDropdown from "../pw-dropdown/pw-dropdown.component";
+
 import "./room-list.styles.scss";
 
 const RoomList = ({ children, roomId, availability, password, history }) => {
-  const handleClick = async () => {
-    const res = await fetch("/check_availability", {
+  const handleClick = e => {
+    const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ roomId })
-    });
+    };
 
-    if (res && res.status === 200) {
-      const data = await res.json();
+    handleFetch("/check_availability", settings).then(({ data }) => {
       if (!data.availability) {
         alert("Sorry, this room is now full :(");
         history.push("/list");
       }
-    }
+    });
   };
 
   return (
