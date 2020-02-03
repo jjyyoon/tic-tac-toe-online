@@ -104,11 +104,6 @@ def user_offline(current_user):
     emit('user is offline', user.username, namespace='/chat', broadcast=True)
 
 
-def get_players(room):
-    emit('get players', {'player1': room.user1_username,
-                         'player2': room.user2_username}, namespace='/chat', room=room.id)
-
-
 def frontend_room_info(room):
     room_info = {'id': room.id, 'name': room.name,
                  'user1': room.user1_username, 'user2': room.user2_username}
@@ -122,6 +117,8 @@ def frontend_room_info(room):
 
 
 def update_rooms(room):
+    emit('update players', {'player1': room.user1_username, 'player2': room.user2_username}, namespace='/chat', room=room.id)
+
     room_info = frontend_room_info(room)
     emit('update rooms', room_info, namespace='/chat', broadcast=True)
 
@@ -137,7 +134,6 @@ def delete_user_from_room(room, current_user):
 
     emit('leave message', f'{current_user} has left the room.',
          namespace='/chat', room=room.id)
-    get_players(room)
     update_rooms(room)
 
 
@@ -271,7 +267,6 @@ def on_join(data):
             db.session.commit()
 
     update_rooms(room)
-    get_players(room)
     emit('join message', f'{username} has entered the room.',
          namespace='/chat', room=room_id)
 
