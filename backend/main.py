@@ -138,6 +138,20 @@ def delete_user_from_room(room, current_user):
     update_rooms(room)
 
 
+def user_offline(current_user):
+    user = User.query.filter_by(username=current_user).first()
+    user.online = False
+    db.session.commit()
+
+    emit('user is offline', user.username, namespace='/chat', broadcast=True)
+
+    rooms = Room.query.filter(or_(
+        Room.user1_username == current_user, Room.user2_username == current_user)).all()
+
+    for room in rooms:
+        delete_user_from_room(room, current_user)
+
+
 @app.route('/logout', methods=['POST'])
 def logout():
     user_name = request.get_json()['userName']
@@ -258,12 +272,6 @@ def user_connect():
 def user_disconnect():
     user_name = get_jwt_identity()
     user_offline(user_name)
-
-    rooms = Room.query.filter(
-        or_(Room.user1_username == user_name, Room.user2_username == user_name)).all()
-
-    for room in rooms:
-        delete_user_from_room(room, user_name)
 
 
 @socketio.on('join', namespace='/chat')
