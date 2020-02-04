@@ -18,11 +18,15 @@ class RoomListContainer extends React.Component {
     chatSocket.on("update rooms", updatedRoom => {
       const { rooms } = this.state;
       const idx = rooms.findIndex(room => room.id === updatedRoom.id);
+
       if (idx === -1) {
         rooms.push(updatedRoom);
+      } else if (updatedRoom.deleted) {
+        rooms.splice(idx, 1);
       } else {
         rooms[idx] = updatedRoom;
       }
+
       this.setState({ rooms });
     });
   }
@@ -35,6 +39,8 @@ class RoomListContainer extends React.Component {
 
   render() {
     const { rooms } = this.state;
+    const { currentUser } = this.props;
+
     const getInfo = room => {
       if (room.user1 && room.user2) {
         return {
@@ -56,13 +62,14 @@ class RoomListContainer extends React.Component {
           return (
             <RoomList
               key={index}
-              roomId={room.id}
+              room={room}
               availability={availability}
-              password={room.password}
+              currentUser={currentUser}
             >
               <p className="room-name">
                 {room.name}
-                <span className="room-info">{`　${str}`}</span>
+                <span>{` ${str}`}</span>
+                <span className="created-by">{`　Created by ${room.created_by}`}</span>
               </p>
             </RoomList>
           );

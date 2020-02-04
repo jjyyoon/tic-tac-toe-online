@@ -1,10 +1,22 @@
-.badge {
-  font-size: 100%;
-  font-weight: 500;
-}
+.badge-container {
+  .badge-delete {
+    color: white;
+    margin-right: 0.5em;
+    cursor: pointer;
+  }
 
-.badge-secondary {
-  opacity: 0.65;
-  pointer-events: none;
-  cursor: default;
+  .link-container {
+    display: inline-block;
+  }
+
+  .badge {
+    font-size: 100%;
+    font-weight: 500;
+  }
+
+  .badge-secondary {
+    opacity: 0.65;
+    pointer-events: none;
+    cursor: default;
+  }
 }

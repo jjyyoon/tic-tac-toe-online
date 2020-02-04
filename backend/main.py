@@ -104,8 +104,8 @@ def user_offline(current_user):
     emit('user is offline', user.username, namespace='/chat', broadcast=True)
 
 
-def frontend_room_info(room):
-    room_info = {'id': room.id, 'name': room.name,
+def frontend_room_info(room, deleted=False):
+    room_info = {'deleted': deleted, 'id': room.id, 'name': room.name, 'created_by': room.created_by,
                  'user1': room.user1_username, 'user2': room.user2_username}
 
     if room.password:
@@ -116,10 +116,11 @@ def frontend_room_info(room):
     return room_info
 
 
-def update_rooms(room):
-    emit('update players', {'player1': room.user1_username, 'player2': room.user2_username}, namespace='/chat', room=room.id)
+def update_rooms(room, deleted=False):
+    emit('update players', {'player1': room.user1_username,
+                            'player2': room.user2_username}, namespace='/chat', room=room.id)
 
-    room_info = frontend_room_info(room)
+    room_info = frontend_room_info(room, deleted)
     emit('update rooms', room_info, namespace='/chat', broadcast=True)
 
 
@@ -170,11 +171,24 @@ def create_room():
     if password:
         pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
 
-    new_room = Room(id=room_id, name=name, password=pw_hash)
+    new_room = Room(id=room_id, name=name,
+                    password=pw_hash, created_by=user_name)
     db.session.add(new_room)
     db.session.commit()
 
     return jsonify({'room_id': room_id}), 200
+
+
+@app.route('/deleteroom', methods=['POST'])
+def delete_room():
+    room_id = request.get_json()['roomId']
+    room = Room.query.filter_by(id=room_id).first()
+
+    db.session.delete(room)
+    db.session.commit()
+
+    update_rooms(room, True)
+    return jsonify({})
 
 
 @app.route('/loadrooms')
@@ -204,9 +218,11 @@ def check_availability():
 
     if room:
         if room.user1_username and room.user2_username:
-            res = {'availability': False}
+            res = {'count': 2}
+        elif room.user1_username or room.user2_username:
+            res = {'count': 1}
         else:
-            res = {'availability': True}
+            res = {'count': 0}
 
     return jsonify(res)
 
