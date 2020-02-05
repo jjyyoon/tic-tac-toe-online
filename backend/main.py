@@ -96,14 +96,6 @@ def auth():
     return jsonify(res), 200
 
 
-def user_offline(current_user):
-    user = User.query.filter_by(username=current_user).first()
-    user.online = False
-    db.session.commit()
-
-    emit('user is offline', user.username, namespace='/chat', broadcast=True)
-
-
 def frontend_room_info(room, deleted=False):
     room_info = {'deleted': deleted, 'id': room.id, 'name': room.name, 'created_by': room.created_by,
                  'user1': room.user1_username, 'user2': room.user2_username}
