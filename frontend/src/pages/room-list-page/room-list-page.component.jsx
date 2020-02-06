@@ -1,11 +1,12 @@
 import React from "react";
 import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
 
 import { handleFetch } from "../../handle-fetch";
+
 import WithAuth from "../../components/auth/with-auth";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import RoomListContainer from "../../components/room-list-container/room-list-container.component";
+import ChatWindow from "../../components/chat-window/chat-window.component";
 import ListContainer from "../../components/list-container/list-container.component";
 import CreateRoom from "../../components/create-room/create-room.component";
 
@@ -68,6 +69,10 @@ class RoomListPage extends React.Component {
             currentUser={currentUser}
           />
         </div>
+        <ChatWindow
+          chatSocket={chatSocket}
+          currentUser={currentUser}
+        ></ChatWindow>
         <div className="user-list">
           <h1>Player Online</h1>
           {userNames.length !== 0 ? <ListContainer arr={userNames} /> : null}
