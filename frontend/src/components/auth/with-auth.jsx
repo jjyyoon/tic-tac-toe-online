@@ -39,7 +39,7 @@ const WithAuth = WrappedComponent => {
             chatSocket={chatSocket}
             currentUser={currentUser}
             history={history}
-            room={location.pathname.substr(6)}
+            room={location.pathname.substr(6).toString()}
           />
         )
       );

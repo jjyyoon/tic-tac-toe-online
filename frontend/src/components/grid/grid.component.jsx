@@ -1,4 +1,7 @@
 import React from "react";
+import { handleFetch } from "../../handle-fetch";
+
+import { Card, Row } from "react-bootstrap";
 import Space from "../space/space.component";
 
 import "./grid.styles.scss";
@@ -8,55 +11,59 @@ class Grid extends React.Component {
     super(props);
 
     this.state = {
-      grid: this.createGrid(props.size)
+      grid: null,
+      currentTurn: null
     };
+
+    const { gameSocket } = props;
+    gameSocket.on("update a game", ({ grid, turn }) => {
+      this.setState({ grid, currentTurn: turn });
+    });
   }
 
-  createGrid = size => {
-    let grid = [];
-    for (let i = 0; i < size; i = i + 1) {
-      let row = [];
-      for (let j = 0; j < size; j = j + 1) {
-        row.push("");
-      }
-      grid.push(row);
-    }
+  componentDidMount() {
+    const { gameId } = this.props;
+    const settings = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gameId })
+    };
 
-    return grid;
-  };
-
-  updateState = (i, j, mark) => {
-    const newGrid = this.state.grid.slice();
-    newGrid[i][j] = mark;
-
-    this.setState({ grid: newGrid });
-    this.props.changeTurn();
-  };
-
-  validate = () => {};
+    handleFetch("/loadgame", settings).then(({ data }) => {
+      const { grid, turn } = data;
+      this.setState({ grid, currentTurn: turn });
+      console.log(this.state);
+    });
+  }
 
   render() {
-    const { grid } = this.state;
-    const { player, currentTurn } = this.props;
+    const { currentUser, otherPlayer, roomId, gameId } = this.props;
+    const { grid, currentTurn } = this.state;
 
     return (
-      <div className="grid">
-        {grid.map((row, rowIdx) => (
-          <div key={rowIdx} className="row">
-            {row.map((col, colIdx) => (
-              <Space
-                key={`${rowIdx}${colIdx}`}
-                player={player}
-                currentTurn={currentTurn}
-                update={this.updateState}
-                validate={this.validate}
-                i={rowIdx}
-                j={colIdx}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+      <Card.Body className="no-footer">
+        <Card.Title>
+          {currentUser === currentTurn ? "Your Turn" : `${otherPlayer}'s Turn`}
+        </Card.Title>
+        {grid
+          ? grid.map((row, rowIdx) => (
+              <Row key={rowIdx}>
+                {row.map((col, colIdx) => (
+                  <Space
+                    key={`${rowIdx}${colIdx}`}
+                    value={col}
+                    x={rowIdx}
+                    y={colIdx}
+                    currentUser={currentUser}
+                    roomId={roomId}
+                    gameId={gameId}
+                    clickable={currentUser === currentTurn ? true : false}
+                  />
+                ))}
+              </Row>
+            ))
+          : null}
+      </Card.Body>
     );
   }
 }
