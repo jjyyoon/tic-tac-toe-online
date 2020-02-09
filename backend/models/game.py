@@ -11,6 +11,7 @@ class Game(db.Model):
     turn = db.Column(db.Integer, nullable=False)
     winner_username = db.Column(db.String(80), db.ForeignKey('user.username'))
     loser_username = db.Column(db.String(80), db.ForeignKey('user.username'))
+    draw = db.Column(db.Boolean)
     player1 = db.relationship('User', foreign_keys=[player1_username])
     player2 = db.relationship('User', foreign_keys=[player2_username])
     winner = db.relationship('User', foreign_keys=[winner_username])

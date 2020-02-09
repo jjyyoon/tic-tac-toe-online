@@ -362,13 +362,13 @@ def check_game():
     game = Game.query.filter_by(id=data['gameId']).first()
 
     # Check if it's this user's turn
-    username = data['currentUser']
+    currentPlayer = data['currentUser']
     player1 = game.player1_username
     player2 = game.player2_username
-    total_turn = game.turn
+    turn = game.turn
 
-    if (total_turn % 2 != 1 and username == player1) or (total_turn % 2 != 0 and username == player2):
-        emit('game finished', f'{username} played out of turn! The game will end.',
+    if (turn % 2 != 1 and currentPlayer == player1) or (turn % 2 != 0 and currentPlayer == player2):
+        emit('game finished', f'{currentPlayer} played out of turn! The game will end.',
              namespace='/game', room=data['roomId'])
         return {}
 
@@ -377,35 +377,43 @@ def check_game():
     x = data['x']
     y = data['y']
     if grid[x][y] != 0:
-        emit('game finished', f'{username} clicked not an empty space! The game will end.',
+        emit('game finished', f'{currentPlayer} clicked not an empty space! The game will end.',
              namespace='/game', room=data['roomId'])
         return {}
 
     # Update the game
-    if username == player1:
+    if currentPlayer == player1:
         grid[x][y] = 1
-        turn = player2
+        otherPlayer = player2
     else:
         grid[x][y] = 2
-        turn = player1
+        otherPlayer = player1
 
     game.state = json.dumps(grid)
-    game.turn = total_turn + 1
+    game.turn = turn + 1
     db.session.commit()
 
-    emit('update a game', {'grid': grid, 'turn': turn},
+    emit('update a game', {'grid': grid, 'turn': otherPlayer},
          namespace='/game', room=data['roomId'])
 
     # Check if the game ended
-    result = check_result(grid, 3, x, y, total_turn)
+    result = check_result(grid, 3, x, y, turn)
     if result is None:
         return {}
     elif result == 'draw':
+        game.draw = True
+        db.session.commit()
+
         emit('game finished', 'This game ended in a draw!',
              namespace='/game', room=data['roomId'])
         return {}
     else:
-        emit('game finished', f'{username} won!',
+        game.winner_username = currentPlayer
+        game.loser_username = otherPlayer
+        game.draw = False
+        db.session.commit()
+
+        emit('game finished', f'{currentPlayer} won!',
              namespace='/game', room=data['roomId'])
         return {}
 
