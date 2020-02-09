@@ -1,8 +1,10 @@
 from .database import db
+from sqlalchemy.dialects.postgresql import UUID
+from uuid import uuid4
 
 
 class Game(db.Model):
-    id = db.Column(db.String(50), primary_key=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid4())
     state = db.Column(db.Text, nullable=False)
     player1_username = db.Column(
         db.String(80), db.ForeignKey('user.username'), nullable=False)
