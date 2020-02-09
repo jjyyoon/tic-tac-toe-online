@@ -2,6 +2,10 @@
   font-family: "Noto Sans KR", sans-serif;
 }
 
+.card-body.no-footer {
+  height: 700px;
+}
+
 .error {
   color: red;
 }

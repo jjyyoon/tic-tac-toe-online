@@ -5,6 +5,9 @@ from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import or_
 from uuid import uuid4
+import json
+
+from game import make_grid, check_result
 
 from models.database import db
 from models.user import User
@@ -52,9 +55,9 @@ def register():
     existing_user2 = User.query.filter_by(email=email).first()
 
     if existing_user1:
-        return jsonify({'user_name': None, 'err': "username"})
+        return jsonify({'user_name': None, 'err': 'username'})
     elif existing_user2:
-        return jsonify({'user_name': None, 'err': "email"})
+        return jsonify({'user_name': None, 'err': 'email'})
 
     password = request.get_json()['password']
     pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
@@ -315,6 +318,101 @@ def handle_chat(message):
     else:
         emit('load a global chat', new_message,
              namespace='/chat', broadcast=True)
+
+
+@app.route('/startgame', methods=['POST'])
+def start_game():
+    room_id = request.get_json()['roomId']
+    room = Room.query.filter_by(id=room_id).first()
+
+    # Will add a size column into the Room table, then it can also bring size info from the Room table.
+    size = request.get_json()['size']
+
+    game_id = uuid4()
+    grid = make_grid(size)
+    grid_db = json.dumps(grid)
+
+    new_game = Game(id=game_id, state=grid_db, player1_username=room.user1_username,
+                    player2_username=room.user2_username, turn=1)
+
+    db.session.add(new_game)
+    db.session.commit()
+
+    emit('game started', f'{game_id}', namespace='/game', room=room_id)
+
+    return jsonify({'game_id': game_id})
+
+
+@app.route('/loadgame', methods=['POST'])
+def load_grid():
+    game_id = request.get_json()['gameId']
+    game = Game.query.filter_by(id=game_id).first()
+    grid = json.loads(game.state)
+    if game.turn % 2 == 1:
+        turn = game.player1_username
+    else:
+        turn = game.player2_username
+
+    return jsonify({'grid': grid, 'turn': turn})
+
+
+@app.route('/checkgame', methods=['POST'])
+def check_game():
+    data = request.get_json()
+    game = Game.query.filter_by(id=data['gameId']).first()
+
+    # Check if it's this user's turn
+    username = data['currentUser']
+    player1 = game.player1_username
+    player2 = game.player2_username
+    total_turn = game.turn
+
+    if (total_turn % 2 != 1 and username == player1) or (total_turn % 2 != 0 and username == player2):
+        emit('game finished', f'{username} played out of turn! The game will end.',
+             namespace='/game', room=data['roomId'])
+        return {}
+
+    # Check if an empty space is clicked
+    grid = json.loads(game.state)
+    x = data['x']
+    y = data['y']
+    if grid[x][y] != 0:
+        emit('game finished', f'{username} clicked not an empty space! The game will end.',
+             namespace='/game', room=data['roomId'])
+        return {}
+
+    # Update the game
+    if username == player1:
+        grid[x][y] = 1
+        turn = player2
+    else:
+        grid[x][y] = 2
+        turn = player1
+
+    game.state = json.dumps(grid)
+    game.turn = total_turn + 1
+    db.session.commit()
+
+    emit('update a game', {'grid': grid, 'turn': turn},
+         namespace='/game', room=data['roomId'])
+
+    # Check if the game ended
+    result = check_result(grid, 3, x, y, total_turn)
+    if result is None:
+        return {}
+    elif result == 'draw':
+        emit('game finished', 'This game ended in a draw!',
+             namespace='/game', room=data['roomId'])
+        return {}
+    else:
+        emit('game finished', f'{username} won!',
+             namespace='/game', room=data['roomId'])
+        return {}
+
+
+@socketio.on('join', namespace='/game')
+def on_join_game(data):
+    join_room(data['roomId'])
 
 
 if __name__ == '__main__':

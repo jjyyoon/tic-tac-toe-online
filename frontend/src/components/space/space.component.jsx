@@ -1,18 +1,30 @@
 import React from "react";
+import { handleFetch } from "../../handle-fetch";
+
+import { Col } from "react-bootstrap";
 
 import "./space.styles.scss";
 
-const Space = ({ player, currentTurn, update, validate, i, j }) => {
-  const mark = player === "Player 1" ? "O" : "X";
+const Space = ({ value, x, y, currentUser, roomId, gameId, clickable }) => {
   const handleClick = e => {
-    if (player === currentTurn) {
-      e.target.innerHTML = mark;
-      update(i, j, mark);
-      validate();
-    }
+    const settings = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentUser, roomId, gameId, x: x, y: y })
+    };
+
+    handleFetch("/checkgame", settings);
   };
 
-  return <div className="space" onClick={handleClick}></div>;
+  return (
+    <Col
+      as="button"
+      onClick={handleClick}
+      disabled={value === 0 && clickable ? false : true}
+    >
+      {value}
+    </Col>
+  );
 };
 
 export default Space;
