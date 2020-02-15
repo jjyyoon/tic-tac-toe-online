@@ -4,7 +4,6 @@ from flask_jwt_extended import (
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import or_
-from uuid import uuid4
 import json
 
 from game import make_grid, check_result
@@ -100,8 +99,8 @@ def auth():
 
 
 def frontend_room_info(room, deleted=False):
-    room_info = {'deleted': deleted, 'id': room.id, 'name': room.name, 'created_by': room.created_by,
-                 'user1': room.user1_username, 'user2': room.user2_username}
+    room_info = {'deleted': deleted, 'id': str(
+        room.id), 'name': room.name, 'created_by': room.created_by, 'user1': room.user1_username, 'user2': room.user2_username}
 
     if room.password:
         room_info['password'] = True,
@@ -113,7 +112,7 @@ def frontend_room_info(room, deleted=False):
 
 def update_rooms(room, deleted=False):
     emit('update players', {'player1': room.user1_username,
-                            'player2': room.user2_username}, namespace='/chat', room=room.id)
+                            'player2': room.user2_username}, namespace='/chat', room=str(room.id))
 
     room_info = frontend_room_info(room, deleted)
     emit('update rooms', room_info, namespace='/chat', broadcast=True)
@@ -129,7 +128,7 @@ def delete_user_from_room(room, current_user):
         db.session.commit()
 
     emit('leave message', f'{current_user} has left the room.',
-         namespace='/chat', room=room.id)
+         namespace='/chat', room=str(room.id))
     update_rooms(room)
 
 
@@ -170,7 +169,6 @@ def game(room_id):
 
 @app.route('/createroom', methods=['POST'])
 def create_room():
-    room_id = uuid4()
     name = request.get_json()['roomName'],
     password = request.get_json()['roomPassword']
     user_name = request.get_json()['userName']
@@ -180,12 +178,11 @@ def create_room():
     if password:
         pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
 
-    new_room = Room(id=room_id, name=name,
-                    password=pw_hash, created_by=user_name)
+    new_room = Room(name=name, password=pw_hash, created_by=user_name)
     db.session.add(new_room)
     db.session.commit()
 
-    return jsonify({'room_id': room_id}), 200
+    return jsonify({'room_id': str(new_room.id)}), 200
 
 
 @app.route('/deleteroom', methods=['POST'])
@@ -328,19 +325,18 @@ def start_game():
     # Will add a size column into the Room table, then it can also bring size info from the Room table.
     size = request.get_json()['size']
 
-    game_id = uuid4()
     grid = make_grid(size)
     grid_db = json.dumps(grid)
 
-    new_game = Game(id=game_id, state=grid_db, player1_username=room.user1_username,
+    new_game = Game(state=grid_db, player1_username=room.user1_username,
                     player2_username=room.user2_username, turn=1)
 
     db.session.add(new_game)
     db.session.commit()
 
-    emit('game started', f'{game_id}', namespace='/game', room=room_id)
+    emit('game started', str(new_game.id), namespace='/game', room=room_id)
 
-    return jsonify({'game_id': game_id})
+    return jsonify({'game_id': str(new_game.id)})
 
 
 @app.route('/loadgame', methods=['POST'])
