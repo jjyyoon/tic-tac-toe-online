@@ -362,13 +362,13 @@ def check_game():
     game = Game.query.filter_by(id=data['gameId']).first()
 
     # Check if it's this user's turn
-    currentPlayer = data['currentUser']
+    current_player = data['currentUser']
     player1 = game.player1_username
     player2 = game.player2_username
     turn = game.turn
 
-    if (turn % 2 != 1 and currentPlayer == player1) or (turn % 2 != 0 and currentPlayer == player2):
-        emit('game finished', f'{currentPlayer} played out of turn! The game will end.',
+    if (turn % 2 != 1 and current_player == player1) or (turn % 2 != 0 and current_player == player2):
+        emit('game finished', f'{current_player} played out of turn! The game will end.',
              namespace='/game', room=data['roomId'])
         return {}
 
@@ -377,12 +377,12 @@ def check_game():
     x = data['x']
     y = data['y']
     if grid[x][y] != 0:
-        emit('game finished', f'{currentPlayer} clicked not an empty space! The game will end.',
+        emit('game finished', f'{current_player} clicked not an empty space! The game will end.',
              namespace='/game', room=data['roomId'])
         return {}
 
     # Update the game
-    if currentPlayer == player1:
+    if current_player == player1:
         grid[x][y] = 1
         otherPlayer = player2
     else:
@@ -408,12 +408,12 @@ def check_game():
              namespace='/game', room=data['roomId'])
         return {}
     else:
-        game.winner_username = currentPlayer
+        game.winner_username = current_player
         game.loser_username = otherPlayer
         game.draw = False
         db.session.commit()
 
-        emit('game finished', f'{currentPlayer} won!',
+        emit('game finished', f'{current_player} won!',
              namespace='/game', room=data['roomId'])
         return {}
 
