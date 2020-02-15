@@ -3,10 +3,8 @@ import { withRouter } from "react-router";
 
 import { handleFetch } from "../../handle-fetch";
 
+import { Col, Form, Button } from "react-bootstrap";
 import FormInput from "../form-input/form-input.component";
-import CustomButton from "../custom-button/custom-button.component";
-
-import "./sign-up.styles.scss";
 
 class SignUp extends React.Component {
   constructor(props) {
@@ -21,7 +19,7 @@ class SignUp extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     this.setState({ errUserName: null, errEmail: null, errPassword: null });
-    const userName = e.target.userName.value;
+    const userName = e.target.username.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirmPassword.value;
@@ -61,41 +59,37 @@ class SignUp extends React.Component {
   render() {
     const { errUserName, errEmail, errPassword } = this.state;
     return (
-      <div className="sign-up">
-        <h3>I don't have an account</h3>
-        <span>Sign up with your email and password</span>
-
-        <form onSubmit={this.handleSubmit}>
+      <Col className="right">
+        <h3>I don't have an account.</h3>
+        <p>Sign up with your email and password.</p>
+        <Form onSubmit={this.handleSubmit}>
           <FormInput
-            id="sign-up-username"
-            label="User Name"
-            name="userName"
+            name="username"
             type="text"
+            id="sign-up-username"
+            label="Username"
+            errorMessage={errUserName ? errUserName : null}
           />
-          {errUserName ? <p className="error">{errUserName}</p> : null}
           <FormInput
-            id="sign-up-email"
-            label="Email Address"
             name="email"
             type="email"
+            id="sign-up-email"
+            label="Email Address"
+            errorMessage={errEmail ? errEmail : null}
           />
-          {errEmail ? <p className="error">{errEmail}</p> : null}
-          <FormInput label="Password" name="password" type="password" />
+          <FormInput name="password" type="password" label="Password" />
           <FormInput
-            id="sign-up-password"
-            label="Confirm Password"
             name="confirmPassword"
             type="password"
+            id="sign-up-password"
+            label="Confirm Password"
+            errorMessage={errPassword ? errPassword : null}
           />
-          {errPassword ? <p className="error">{errPassword}</p> : null}
-          <CustomButton
-            type="submit"
-            className="btn btn-lg btn-primary btn-block"
-          >
+          <Button type="submit" variant="warning" size="lg" block>
             Sign Up
-          </CustomButton>
-        </form>
-      </div>
+          </Button>
+        </Form>
+      </Col>
     );
   }
 }

@@ -1,12 +1,10 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { Row, Col } from "react-bootstrap";
 import WithAuth from "../../components/auth/with-auth";
-import CustomButton from "../../components/custom-button/custom-button.component";
 import GameContainer from "../../components/game-container/game-container.component";
 import ChatBox from "../../components/chatBox/chatBox.component";
-
-import "./game-page.styles.scss";
 
 class GamePage extends React.Component {
   componentDidMount() {
@@ -24,19 +22,18 @@ class GamePage extends React.Component {
     const username = currentUser.userName.toString();
 
     return (
-      <div className="game-page">
-        <CustomButton type="button" onClick={this.handleClick}>
-          Leave
-        </CustomButton>
-        <div className="main">
+      <Row className="game-page">
+        <Col className="left">
           <GameContainer
             currentUser={username}
             chatSocket={chatSocket}
             roomId={room}
-          ></GameContainer>
+          />
+        </Col>
+        <Col className="right">
           <ChatBox chatSocket={chatSocket} room={room} currentUser={username} />
-        </div>
-      </div>
+        </Col>
+      </Row>
     );
   }
 }

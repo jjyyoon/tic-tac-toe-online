@@ -1,22 +1,11 @@
-.badge-container {
-  .badge-delete {
-    color: white;
-    margin-right: 0.5em;
-    cursor: pointer;
-  }
+.list-group-item {
+  span {
+    color: grey;
+    font-weight: 300;
 
-  .link-container {
-    display: inline-block;
-  }
-
-  .badge {
-    font-size: 100%;
-    font-weight: 500;
-  }
-
-  .badge-secondary {
-    opacity: 0.65;
-    pointer-events: none;
-    cursor: default;
+    &:nth-of-type(2) {
+      font-size: 0.8rem;
+      font-style: italic;
+    }
   }
 }

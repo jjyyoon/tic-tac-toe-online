@@ -1,13 +1,15 @@
 import React from "react";
+
+import { Row } from "react-bootstrap";
 import SignIn from "../../components/sign-in/sign-in.component";
 import SignUp from "../../components/sign-up/sign-up.component";
 import "./sign-in-and-sign-up.styles.scss";
 
 const SignInAndSignUpPage = () => (
-  <div className="sign-in-and-sign-up">
+  <Row className="sign-in-page">
     <SignIn />
     <SignUp />
-  </div>
+  </Row>
 );
 
 export default SignInAndSignUpPage;

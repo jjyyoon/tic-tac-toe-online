@@ -1,9 +1,11 @@
 import React from "react";
 import io from "socket.io-client";
 
-import { Card, Row, Col } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import StartGame from "../start-game/start-game.component";
 import Grid from "../grid/grid.component";
+
+import "./game-container.styles.scss";
 
 class GameContainer extends React.Component {
   constructor(props) {
@@ -50,13 +52,13 @@ class GameContainer extends React.Component {
 
     return (
       <Card>
-        <Card.Header>
-          <Row>
-            <Col>
-              Player 1: <span>{player1}</span>
-            </Col>
-            <Col>Player 2: {player2 ? <span>{player2}</span> : null}</Col>
-          </Row>
+        <Card.Header as="h3">
+          <span>
+            <h6>Player 1:</h6> {player1}
+          </span>
+          <div>
+            <h6>Player 2:</h6> {player2 ? player2 : "Waiting"}
+          </div>
         </Card.Header>
         {gameState ? (
           <Grid
@@ -67,7 +69,7 @@ class GameContainer extends React.Component {
             otherPlayer={otherPlayer}
           />
         ) : (
-          <StartGame roomId={roomId} player2={player2}></StartGame>
+          <StartGame roomId={roomId} player2={player2} />
         )}
       </Card>
     );

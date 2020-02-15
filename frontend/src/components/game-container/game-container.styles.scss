@@ -1,0 +1,30 @@
+.game-page {
+  .card-header {
+    max-height: 63px;
+    overflow: hidden;
+
+    span,
+    div {
+      max-width: 50%;
+    }
+
+    h6 {
+      display: inline-block;
+      font-weight: 300;
+    }
+  }
+
+  .card-body {
+    position: relative;
+
+    &.start-game::after,
+    &.start-game .btn,
+    .table {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

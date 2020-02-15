@@ -2,6 +2,9 @@ import React from "react";
 
 import { handleFetch } from "../../handle-fetch";
 
+import { Card, ListGroup } from "react-bootstrap";
+import CustomModal from "../../components/custom-modal/custom-modal.component";
+import CreateRoomForm from "../create-room-form/create-room-form.component";
 import RoomList from "../../components/room-list/room-list.component";
 
 import "./room-list-container.styles.scss";
@@ -38,43 +41,30 @@ class RoomListContainer extends React.Component {
   }
 
   render() {
+    const { currentUser, chatSocket } = this.props;
     const { rooms } = this.state;
-    const { currentUser } = this.props;
-
-    const getInfo = room => {
-      if (room.user1 && room.user2) {
-        return {
-          availability: false,
-          str: `(2/2 : ${room.user1}, ${room.user2})`
-        };
-      } else if (room.user1 && !room.user2) {
-        return { availability: true, str: `(1/2 : ${room.user1})` };
-      } else {
-        return { availability: true, str: `(0/2)` };
-      }
-    };
 
     return (
-      <div className="room-list-container list-group">
-        {rooms.map((room, index) => {
-          let { availability, str } = getInfo(room);
-
-          return (
-            <RoomList
-              key={index}
-              room={room}
-              availability={availability}
-              currentUser={currentUser}
-            >
-              <p className="room-name">
-                {room.name}
-                <span>{` ${str}`}</span>
-                <span className="created-by">{`　Created by ${room.created_by}`}</span>
-              </p>
-            </RoomList>
-          );
-        })}
-      </div>
+      <Card>
+        <Card.Header as="h3">
+          Rooms
+          <CustomModal
+            badgeVariant="info"
+            title="Create a Room"
+            header={true}
+            form="create-room-form"
+          >
+            <CreateRoomForm chatSocket={chatSocket} currentUser={currentUser} />
+          </CustomModal>
+        </Card.Header>
+        <Card.Body>
+          <ListGroup>
+            {rooms.map((room, index) => (
+              <RoomList key={index} currentUser={currentUser} room={room} />
+            ))}
+          </ListGroup>
+        </Card.Body>
+      </Card>
     );
   }
 }

@@ -1,6 +1,21 @@
-.sign-in-and-sign-up {
-  width: 850px;
-  display: flex;
-  justify-content: space-between;
-  margin: 30px auto;
+.sign-in-page {
+  &.row {
+    max-width: 1000px;
+
+    .col {
+      max-width: 410px;
+
+      p {
+        font-weight: 300;
+      }
+
+      form {
+        margin-top: 32px;
+
+        button {
+          margin-top: 32px;
+        }
+      }
+    }
+  }
 }

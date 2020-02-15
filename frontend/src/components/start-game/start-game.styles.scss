@@ -1,0 +1,21 @@
+.start-game {
+  &:after {
+    content: " ";
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.1;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/3/32/Tic_tac_toe.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 90%;
+  }
+
+  button {
+    z-index: 2;
+
+    &.btn-warning {
+      font-weight: 700;
+    }
+  }
+}

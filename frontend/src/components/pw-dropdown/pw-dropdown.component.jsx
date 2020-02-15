@@ -3,12 +3,20 @@ import { withRouter } from "react-router";
 
 import { handleFetch } from "../../handle-fetch";
 
+import { Form } from "react-bootstrap";
 import FormInput from "../form-input/form-input.component";
-import CustomButton from "../custom-button/custom-button.component";
 
-const PwDropdown = ({ roomId, handleJoin, history }) => {
-  const handleSubmit = e => {
+class PwDropdown extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      err: null
+    };
+  }
+
+  handleSubmit = e => {
     e.preventDefault();
+    const { roomId, handleJoin, history } = this.props;
     const password = e.target.password.value;
 
     const settings = {
@@ -22,23 +30,24 @@ const PwDropdown = ({ roomId, handleJoin, history }) => {
         handleJoin();
         history.push(`/game/${roomId}`);
       } else {
-        alert("Wrong password for this room!");
+        this.setState({ err: "Wrong password for this room!" });
       }
     });
   };
 
-  return (
-    <div className="dropdown-menu">
-      <form className="px-4 py-3" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <FormInput label="Password" name="password" type="password" />
-        </div>
-        <CustomButton type="submit" className="btn btn-info">
-          Join
-        </CustomButton>
-      </form>
-    </div>
-  );
-};
+  render() {
+    const { err } = this.state;
+    return (
+      <Form onSubmit={this.handleSubmit} id="room-password-form">
+        <FormInput
+          name="password"
+          type="password"
+          label="Password"
+          errorMessage={err}
+        />
+      </Form>
+    );
+  }
+}
 
 export default withRouter(PwDropdown);

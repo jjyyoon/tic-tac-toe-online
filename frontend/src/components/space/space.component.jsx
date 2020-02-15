@@ -1,7 +1,7 @@
 import React from "react";
 import { handleFetch } from "../../handle-fetch";
 
-import { Col } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import "./space.styles.scss";
 
@@ -16,14 +16,27 @@ const Space = ({ value, x, y, currentUser, roomId, gameId, clickable }) => {
     handleFetch("/checkgame", settings);
   };
 
+  let color;
+  let mark;
+
+  if (value === 1) {
+    color = "primary";
+    mark = "O";
+  } else if (value === 2) {
+    color = "danger";
+    mark = "X";
+  }
+
   return (
-    <Col
-      as="button"
-      onClick={handleClick}
-      disabled={value === 0 && clickable ? false : true}
-    >
-      {value}
-    </Col>
+    <td>
+      <Button
+        variant={value === 0 ? "outline-dark" : color}
+        onClick={handleClick}
+        disabled={value === 0 && clickable ? false : true}
+      >
+        <h1>{value === 0 ? null : mark}</h1>
+      </Button>
+    </td>
   );
 };
 

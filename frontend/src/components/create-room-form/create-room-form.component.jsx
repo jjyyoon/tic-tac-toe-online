@@ -3,7 +3,8 @@ import { withRouter } from "react-router";
 
 import { handleFetch } from "../../handle-fetch";
 
-import "./create-room-form.styles.scss";
+import { Form } from "react-bootstrap";
+import FormInput from "../form-input/form-input.component";
 
 class CreateRoomForm extends React.Component {
   constructor(props) {
@@ -48,33 +49,23 @@ class CreateRoomForm extends React.Component {
     const { checkboxChecked } = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit} id="createRoomForm">
-        <div className="form-group">
-          <label className="col-form-label">Room Name:</label>
-          <input type="text" className="form-control" name="roomName" />
-        </div>
-        <div className="form-check">
-          <input
-            className="form-check-input"
+      <Form onSubmit={this.handleSubmit} id="create-room-form">
+        <FormInput name="roomName" type="text" label="Room Name" />
+        <Form.Group>
+          <Form.Check
             type="checkbox"
-            value=""
+            label="Set a password for this room"
             onClick={this.handleClick}
           />
-          <label className="form-check-label">
-            Set a password for this room
-          </label>
-        </div>
+        </Form.Group>
         {checkboxChecked ? (
-          <div className="form-group">
-            <label className="col-form-label">Room Password:</label>
-            <input
-              type="password"
-              className="form-control"
-              name="roomPassword"
-            />
-          </div>
+          <FormInput
+            name="roomPassword"
+            type="password"
+            label="Room Password"
+          />
         ) : null}
-      </form>
+      </Form>
     );
   }
 }
