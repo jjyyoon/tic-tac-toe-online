@@ -1,9 +1,9 @@
 import React from "react";
 import { withRouter } from "react-router";
 
+import { Button } from "react-bootstrap";
 import ListContainer from "../list-container/list-container.component";
 import FormInput from "../form-input/form-input.component";
-import CustomButton from "../custom-button/custom-button.component";
 
 import "./chatBox.styles.scss";
 
@@ -67,9 +67,9 @@ class ChatBox extends React.Component {
         <form className="input-group mb-3" onSubmit={this.handleSubmit}>
           <FormInput name="message" type="text" onChange={this.handleChange} />
           <div className="input-group-append">
-            <CustomButton type="submit" className="btn btn-outline-secondary">
+            <Button type="submit" variant="outline-secondary">
               Send
-            </CustomButton>
+            </Button>
           </div>
         </form>
       </div>

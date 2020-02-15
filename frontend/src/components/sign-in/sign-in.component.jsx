@@ -3,10 +3,8 @@ import { withRouter } from "react-router";
 
 import { handleFetch } from "../../handle-fetch";
 
+import { Col, Form, Button } from "react-bootstrap";
 import FormInput from "../form-input/form-input.component";
-import CustomButton from "../custom-button/custom-button.component";
-
-import "./sign-in.styles.scss";
 
 class SignIn extends React.Component {
   constructor(props) {
@@ -32,7 +30,7 @@ class SignIn extends React.Component {
         this.props.history.push("/list");
       } else {
         this.setState({
-          err: "*Invalid email or password, please try again"
+          err: "*Invalid email or password, please try again."
         });
       }
     });
@@ -42,22 +40,22 @@ class SignIn extends React.Component {
     const { err } = this.state;
 
     return (
-      <div className="sign-in">
-        <h3>I already have an account</h3>
-        <span>Sign in with your email and password</span>
-
-        <form onSubmit={this.handleSubmit}>
-          <FormInput label="Email Address" name="email" type="email" />
-          <FormInput label="Password" name="password" type="password" />
-          {err ? <p className="error">{err}</p> : null}
-          <CustomButton
-            type="submit"
-            className="btn btn-lg btn-primary btn-block"
-          >
+      <Col className="left">
+        <h3>I already have an account.</h3>
+        <p>Sign in with your email and password.</p>
+        <Form onSubmit={this.handleSubmit}>
+          <FormInput name="email" type="email" label="Email Address" />
+          <FormInput
+            name="password"
+            type="password"
+            label="Password"
+            errorMessage={err ? err : null}
+          />
+          <Button type="submit" variant="warning" size="lg" block>
             Sign In
-          </CustomButton>
-        </form>
-      </div>
+          </Button>
+        </Form>
+      </Col>
     );
   }
 }

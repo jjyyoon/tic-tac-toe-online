@@ -1,13 +1,22 @@
 .App {
+  height: 100%;
   font-family: "Noto Sans KR", sans-serif;
 }
 
-.card-body.no-footer {
-  height: 700px;
+.row {
+  height: 90%;
+  margin: auto;
+  padding: 25px 75px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.error {
-  color: red;
+.col {
+  height: 100%;
+}
+
+.card {
+  height: 100%;
 }
 
 a {

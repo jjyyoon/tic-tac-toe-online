@@ -1,7 +1,7 @@
 import React from "react";
 import { handleFetch } from "../../handle-fetch";
 
-import { Card, Row } from "react-bootstrap";
+import { Card, Table } from "react-bootstrap";
 import Space from "../space/space.component";
 
 import "./grid.styles.scss";
@@ -12,7 +12,8 @@ class Grid extends React.Component {
 
     this.state = {
       grid: null,
-      currentTurn: null
+      currentTurn: null,
+      spaceSize: null
     };
 
     const { gameSocket } = props;
@@ -31,38 +32,42 @@ class Grid extends React.Component {
 
     handleFetch("/loadgame", settings).then(({ data }) => {
       const { grid, turn } = data;
-      this.setState({ grid, currentTurn: turn });
-      console.log(this.state);
+      const spaceSize = `${Math.floor(100 / grid.length)}%`;
+      this.setState({ grid, currentTurn: turn, spaceSize });
     });
   }
 
   render() {
     const { currentUser, otherPlayer, roomId, gameId } = this.props;
-    const { grid, currentTurn } = this.state;
+    const { grid, currentTurn, spaceSize } = this.state;
 
     return (
-      <Card.Body className="no-footer">
-        <Card.Title>
+      <Card.Body>
+        <span>
           {currentUser === currentTurn ? "Your Turn" : `${otherPlayer}'s Turn`}
-        </Card.Title>
-        {grid
-          ? grid.map((row, rowIdx) => (
-              <Row key={rowIdx}>
-                {row.map((col, colIdx) => (
-                  <Space
-                    key={`${rowIdx}${colIdx}`}
-                    value={col}
-                    x={rowIdx}
-                    y={colIdx}
-                    currentUser={currentUser}
-                    roomId={roomId}
-                    gameId={gameId}
-                    clickable={currentUser === currentTurn ? true : false}
-                  />
-                ))}
-              </Row>
-            ))
-          : null}
+        </span>
+        <Table>
+          <tbody>
+            {grid
+              ? grid.map((row, rowIdx) => (
+                  <tr key={rowIdx} height={spaceSize}>
+                    {row.map((col, colIdx) => (
+                      <Space
+                        key={`${rowIdx}${colIdx}`}
+                        value={col}
+                        x={rowIdx}
+                        y={colIdx}
+                        currentUser={currentUser}
+                        roomId={roomId}
+                        gameId={gameId}
+                        clickable={currentUser === currentTurn ? true : false}
+                      />
+                    ))}
+                  </tr>
+                ))
+              : null}
+          </tbody>
+        </Table>
       </Card.Body>
     );
   }

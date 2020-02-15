@@ -18,7 +18,7 @@ const ChatInput = ({ currentUser, chatSocket, room }) => {
   };
 
   return (
-    <InputGroup as="form" className="mb-3" onSubmit={handleSubmit}>
+    <InputGroup as="form" onSubmit={handleSubmit}>
       <FormControl name="message" placeholder="Enter a message." />
       <InputGroup.Append>
         <Button variant="outline-dark" type="submit">

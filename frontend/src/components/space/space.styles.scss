@@ -1,9 +1,16 @@
-.space {
-  display: inline-block;
-  height: 150px;
-  width: 150px;
-  border: 2px solid;
-  border-radius: 5px;
-  font-size: 100px;
-  font-weight: bold;
+.table {
+  td {
+    padding: 0;
+
+    .btn {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+
+      &:disabled {
+        opacity: 1;
+        cursor: default;
+      }
+    }
+  }
 }
