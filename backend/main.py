@@ -317,6 +317,16 @@ def handle_chat(message):
              namespace='/chat', broadcast=True)
 
 
+@app.route('/gamestate', methods=['POST'])
+def game_state():
+    room_id = request.get_json()['roomId']
+    room = Room.query.filter_by(id=room_id).first()
+    if room.game_id:
+        return jsonify({'game_state': True, 'game_id': str(room.game_id)})
+    else:
+        return jsonify({'game_state': False})
+
+
 @app.route('/startgame', methods=['POST'])
 def start_game():
     room_id = request.get_json()['roomId']
@@ -332,6 +342,9 @@ def start_game():
                     player2_username=room.user2_username, turn=1)
 
     db.session.add(new_game)
+    db.session.commit()
+
+    room.game_id = new_game.id
     db.session.commit()
 
     emit('game started', str(new_game.id), namespace='/game', room=room_id)
@@ -402,7 +415,6 @@ def check_game():
 
         emit('game finished', 'This game ended in a draw!',
              namespace='/game', room=data['roomId'])
-        return {}
     else:
         game.winner_username = current_player
         game.loser_username = otherPlayer
@@ -411,7 +423,11 @@ def check_game():
 
         emit('game finished', f'{current_player} won!',
              namespace='/game', room=data['roomId'])
-        return {}
+
+    room = Room.query.filter_by(id=data['roomId']).first()
+    room.game_id = None
+    db.session.commit()
+    return {}
 
 
 @socketio.on('join', namespace='/game')
