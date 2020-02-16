@@ -1,6 +1,8 @@
 import React from "react";
 import io from "socket.io-client";
 
+import { handleFetch } from "../../handle-fetch";
+
 import { Card } from "react-bootstrap";
 import StartGame from "../start-game/start-game.component";
 import Grid from "../grid/grid.component";
@@ -35,8 +37,21 @@ class GameContainer extends React.Component {
   }
 
   componentDidMount() {
-    const { gameSocket } = this.state;
     const { roomId } = this.props;
+
+    const settings = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomId })
+    };
+
+    handleFetch("/gamestate", settings).then(({ data }) => {
+      if (data.game_state) {
+        this.setState({ gameState: true, gameId: data.game_id });
+      }
+    });
+
+    const { gameSocket } = this.state;
     gameSocket.emit("join", { roomId });
   }
 
