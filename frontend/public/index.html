@@ -38,7 +38,16 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <script>
+        let messages = {{messages | safe}};
+        for (let i = 0; i < messages.length; i++) {
+          alert(messages[i])
+        }
+      </script>
+      {% endif %} {% endwith %}
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
