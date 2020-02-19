@@ -148,8 +148,8 @@ def user_offline(current_user):
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    user_name = request.get_json()['userName']
-    user_offline(user_name)
+    username = request.get_json()['username']
+    user_offline(username)
     res = jsonify({})
     unset_jwt_cookies(res)
     return res, 200
