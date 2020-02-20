@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
 from flask_bcrypt import Bcrypt
@@ -164,7 +164,13 @@ def list():
 @app.route('/game/<uuid:room_id>')
 @jwt_required
 def game(room_id):
-    return render_template('index.html')
+    username = get_jwt_identity()
+    room = Room.query.filter_by(id=room_id).first()
+    if room.user1_username and room.user2_username and room.user1_username != username and room.user2_username != username:
+        flash('Sorry, this room is full.')
+        return redirect(url_for('list'))
+    else:
+        return render_template('index.html')
 
 
 @app.route('/createroom', methods=['POST'])
