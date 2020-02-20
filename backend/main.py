@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
 from flask_bcrypt import Bcrypt
@@ -148,8 +148,8 @@ def user_offline(current_user):
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    user_name = request.get_json()['userName']
-    user_offline(user_name)
+    username = request.get_json()['username']
+    user_offline(username)
     res = jsonify({})
     unset_jwt_cookies(res)
     return res, 200
@@ -164,7 +164,13 @@ def list():
 @app.route('/game/<uuid:room_id>')
 @jwt_required
 def game(room_id):
-    return render_template('index.html')
+    username = get_jwt_identity()
+    room = Room.query.filter_by(id=room_id).first()
+    if room.user1_username and room.user2_username and room.user1_username != username and room.user2_username != username:
+        flash('Sorry, this room is full.')
+        return redirect(url_for('list'))
+    else:
+        return render_template('index.html')
 
 
 @app.route('/createroom', methods=['POST'])
@@ -291,12 +297,7 @@ def on_join(data):
 
 @socketio.on('leave', namespace='/chat')
 def on_leave(data):
-    username = data['username']
-    room_id = data['room']
-    leave_room(room_id)
-
-    room = Room.query.filter_by(id=room_id).first()
-    delete_user_from_room(room, username)
+    leave_room(data['room'])
 
 
 @socketio.on('room created', namespace='/chat')
@@ -311,8 +312,8 @@ def room_created(data):
 def handle_chat(message):
     new_message = message['newMessage']
 
-    if message['room']:
-        room_id = message['room']
+    if message['roomId']:
+        room_id = message['roomId']
         emit('load a chat', new_message, namespace='/chat', room=room_id)
     else:
         emit('load a global chat', new_message,
@@ -363,6 +364,26 @@ def load_grid():
     return jsonify({'grid': grid, 'turn': turn})
 
 
+def game_finished(room, game, result, winner, loser, leave):
+    if result == 'draw':
+        game.draw = True
+        message = 'This game ended in a draw!'
+    else:
+        game.winner_username = winner
+        game.loser_username = loser
+        game.draw = False
+
+        if leave:
+            message = f'{loser} has left the room, you won!'
+        else:
+            message = f'{winner} won!'
+
+    emit('game finished', message, namespace='/game', room=room.id)
+
+    room.game_id = None
+    db.session.commit()
+
+
 @app.route('/checkgame', methods=['POST'])
 def check_game():
     data = request.get_json()
@@ -391,16 +412,16 @@ def check_game():
     # Update the game
     if current_player == player1:
         grid[x][y] = 1
-        otherPlayer = player2
+        other_player = player2
     else:
         grid[x][y] = 2
-        otherPlayer = player1
+        other_player = player1
 
     game.state = json.dumps(grid)
     game.turn = turn + 1
     db.session.commit()
 
-    emit('update a game', {'grid': grid, 'turn': otherPlayer},
+    emit('update a game', {'grid': grid, 'turn': other_player},
          namespace='/game', room=data['roomId'])
 
     # Check if the game ended
@@ -409,29 +430,42 @@ def check_game():
     result = check_result(grid, room.game_size, x, y, turn)
     if result is None:
         return {}
-    elif result == 'draw':
-        game.draw = True
-        db.session.commit()
-
-        emit('game finished', 'This game ended in a draw!',
-             namespace='/game', room=data['roomId'])
     else:
-        game.winner_username = current_player
-        game.loser_username = otherPlayer
-        game.draw = False
-        db.session.commit()
+        game_finished(room, game, result,
+                      current_player, other_player, False)
+        return {}
 
-        emit('game finished', f'{current_player} won!',
-             namespace='/game', room=data['roomId'])
 
-    room.game_id = None
-    db.session.commit()
+@app.route('/leftroom', methods=['POST'])
+def left_room():
+    data = request.get_json()
+
+    room = Room.query.filter_by(id=data['room']).first()
+
+    if room.game_id:
+        game = Game.query.filter_by(id=room.game_id).first()
+
+        if room.user1_username == data['username']:
+            winner = room.user2_username
+            loser = room.user1_username
+        else:
+            winner = room.user1_username
+            loser = room.user2_username
+
+        game_finished(room, game, True, winner, loser, True)
+
+    delete_user_from_room(room, data['username'])
     return {}
 
 
 @socketio.on('join', namespace='/game')
 def on_join_game(data):
     join_room(data['roomId'])
+
+
+@socketio.on('leave', namespace='/game')
+def on_leave_game(data):
+    leave_room(data['roomId'])
 
 
 if __name__ == '__main__':

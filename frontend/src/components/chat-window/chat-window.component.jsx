@@ -18,30 +18,36 @@ class ChatWindow extends React.Component {
       this.setState({ chat });
     };
 
-    chatSocket.on("load a global chat", message => updateChat(message));
+    const { events } = props;
+    events.map(event => chatSocket.on(event, message => updateChat(message)));
+  }
+
+  componentDidUpdate() {
+    document.getElementById("chatroom").lastChild.scrollIntoView();
   }
 
   render() {
     const { chat } = this.state;
-    const { chatSocket, currentUser } = this.props;
+    const { chatSocket, currentUser, userList, roomId } = this.props;
 
     return (
       <Card>
         <Card.Header as="h3">Chatroom</Card.Header>
         <Card.Body>
           <Row>
-            <Col>
+            <Col id="chatroom">
               {chat.map((element, idx) => (
                 <Card.Text key={idx}>{element}</Card.Text>
               ))}
             </Col>
-            <UserListContainer chatSocket={chatSocket} />
+            {userList ? <UserListContainer chatSocket={chatSocket} /> : null}
           </Row>
         </Card.Body>
         <Card.Footer>
           <ChatInput
             chatSocket={chatSocket}
             currentUser={currentUser.userName}
+            roomId={roomId}
           />
         </Card.Footer>
       </Card>

@@ -55,6 +55,12 @@ class GameContainer extends React.Component {
     gameSocket.emit("join", { roomId });
   }
 
+  componentWillUnmount() {
+    const { gameSocket } = this.state;
+    const { roomId } = this.props;
+    gameSocket.emit("leave", { roomId });
+  }
+
   render() {
     const { roomId, currentUser } = this.props;
     const { gameSocket, gameState, gameId, player1, player2 } = this.state;

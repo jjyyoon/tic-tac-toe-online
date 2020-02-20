@@ -8,45 +8,67 @@ import { Navbar, Nav } from "react-bootstrap";
 
 import "./header.styles.scss";
 
-const Header = ({ history, location }) => {
-  let signedIn;
-
-  if (
-    location.pathname.startsWith("/list") ||
-    location.pathname.startsWith("/game")
-  ) {
-    signedIn = true;
-  } else {
-    signedIn = false;
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { username: null };
   }
 
-  const handleClick = () => {
-    handleFetch("/logout").then(() => {
-      history.push("/");
+  checkSignedIn = () => {
+    handleFetch("/auth", null, 401).then(({ data }) => {
+      if (data) {
+        this.setState({ username: data.user_name });
+      }
     });
   };
 
-  return (
-    <Navbar bg="dark" variant="dark">
-      <Navbar.Brand as={Link} to="/">
-        Tic-tac-toe
-      </Navbar.Brand>
-      <Nav>
-        {signedIn ? (
-          <Nav.Link as={Link} to="/list">
-            ROOM LIST
+  componentDidMount() {
+    this.checkSignedIn();
+  }
+
+  handleClick = () => {
+    const { username } = this.state;
+
+    const settings = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username })
+    };
+
+    handleFetch("/logout", settings).then(() => {
+      this.props.history.push("/");
+      this.setState({ username: null });
+    });
+  };
+
+  render() {
+    const { username } = this.state;
+    if (!username) {
+      this.checkSignedIn();
+    }
+
+    return (
+      <Navbar bg="dark" variant="dark">
+        <Navbar.Brand as={Link} to="/">
+          Tic-tac-toe
+        </Navbar.Brand>
+        <Nav>
+          {username ? (
+            <Nav.Link as={Link} to="/list">
+              ROOM LIST
+            </Nav.Link>
+          ) : null}
+          <Nav.Link
+            as={Link}
+            to={username ? "#" : "/signin"}
+            onClick={username ? this.handleClick : null}
+          >
+            {username ? "SIGN OUT" : "SIGN IN"}
           </Nav.Link>
-        ) : null}
-        <Nav.Link
-          as={Link}
-          to={signedIn ? "#" : "/signin"}
-          onClick={signedIn ? handleClick : null}
-        >
-          {signedIn ? "SIGN OUT" : "SIGN IN"}
-        </Nav.Link>
-      </Nav>
-    </Navbar>
-  );
-};
+        </Nav>
+      </Navbar>
+    );
+  }
+}
 
 export default withRouter(Header);
