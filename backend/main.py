@@ -338,9 +338,10 @@ def start_game():
 
     grid = make_grid(size)
     grid_db = json.dumps(grid)
+    failed_lines_db = json.dumps({"row": [], "col": [], "diagonal": []})
 
     new_game = Game(state=grid_db, player1_username=room.user1_username,
-                    player2_username=room.user2_username, turn=1)
+                    player2_username=room.user2_username, turn=1, failed_lines=failed_lines_db)
 
     db.session.add(new_game)
     db.session.commit()
@@ -422,13 +423,18 @@ def check_game():
 
     game.state = json.dumps(grid)
     game.turn = turn + 1
-    db.session.commit()
 
     emit('update a game', {'grid': grid, 'turn': other_player},
          namespace='/game', room=data['roomId'])
 
     # Check if the game ended
-    result = check_result(grid, 3, x, y, turn)
+    failed_lines = json.loads(game.failed_lines)
+    return_value = check_result(grid, 3, x, y, turn, failed_lines)
+
+    game.failed_lines = json.dumps(return_value['failed_lines'])
+    db.session.commit()
+
+    result = return_value['result']
     if result is None:
         return {}
     else:

@@ -23,7 +23,10 @@ class ChatWindow extends React.Component {
   }
 
   componentDidUpdate() {
-    document.getElementById("chatroom").lastChild.scrollIntoView();
+    const { chat } = this.state;
+    if (chat.length !== 0) {
+      document.getElementById("chatroom").lastChild.scrollIntoView();
+    }
   }
 
   render() {
