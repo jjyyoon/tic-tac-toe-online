@@ -4,7 +4,7 @@ import { withRouter } from "react-router";
 import { Row, Col } from "react-bootstrap";
 import WithAuth from "../../components/auth/with-auth";
 import GameContainer from "../../components/game-container/game-container.component";
-import ChatBox from "../../components/chatBox/chatBox.component";
+import ChatWindow from "../../components/chat-window/chat-window.component";
 
 class GamePage extends React.Component {
   componentDidMount() {
@@ -31,7 +31,12 @@ class GamePage extends React.Component {
           />
         </Col>
         <Col className="right">
-          <ChatBox chatSocket={chatSocket} room={room} currentUser={username} />
+          <ChatWindow
+            currentUser={currentUser}
+            chatSocket={chatSocket}
+            events={["load a chat", "join message", "leave message"]}
+            roomId={room}
+          />
         </Col>
       </Row>
     );

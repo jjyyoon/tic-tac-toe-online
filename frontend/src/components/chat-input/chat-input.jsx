@@ -2,16 +2,16 @@ import React from "react";
 
 import { FormControl, InputGroup, Button } from "react-bootstrap";
 
-const ChatInput = ({ currentUser, chatSocket, room }) => {
+const ChatInput = ({ currentUser, chatSocket, roomId }) => {
   const handleSubmit = e => {
     e.preventDefault();
     const chatInput = e.target.message.value;
     const newMessage = `${currentUser}:　${chatInput}`;
 
-    if (room) {
-      chatSocket.emit("chat", { newMessage, room });
+    if (roomId) {
+      chatSocket.emit("chat", { newMessage, roomId });
     } else {
-      chatSocket.emit("chat", { newMessage, room: null });
+      chatSocket.emit("chat", { newMessage, roomId: null });
     }
 
     document.querySelector(".form-control").value = "";

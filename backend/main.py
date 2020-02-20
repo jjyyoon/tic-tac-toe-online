@@ -315,8 +315,8 @@ def room_created(data):
 def handle_chat(message):
     new_message = message['newMessage']
 
-    if message['room']:
-        room_id = message['room']
+    if message['roomId']:
+        room_id = message['roomId']
         emit('load a chat', new_message, namespace='/chat', room=room_id)
     else:
         emit('load a global chat', new_message,

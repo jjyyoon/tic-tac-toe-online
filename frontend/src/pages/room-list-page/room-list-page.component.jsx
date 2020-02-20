@@ -12,7 +12,12 @@ const RoomListPage = ({ currentUser, chatSocket }) => (
       <RoomListContainer currentUser={currentUser} chatSocket={chatSocket} />
     </Col>
     <Col className="right">
-      <ChatWindow currentUser={currentUser} chatSocket={chatSocket} />
+      <ChatWindow
+        currentUser={currentUser}
+        chatSocket={chatSocket}
+        events={["load a global chat"]}
+        userList={true}
+      />
     </Col>
   </Row>
 );
