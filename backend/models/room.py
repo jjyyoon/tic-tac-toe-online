@@ -13,6 +13,7 @@ class Room(db.Model):
     created_on = db.Column(db.DateTime(), default=datetime.utcnow)
     user1_username = db.Column(db.String(80), db.ForeignKey('user.username'))
     user2_username = db.Column(db.String(80), db.ForeignKey('user.username'))
+    game_size = db.Column(db.Integer, nullable=False)
     game_id = db.Column(UUID(as_uuid=True), db.ForeignKey('game.id'))
     creator = db.relationship('User', foreign_keys=[created_by])
     user1 = db.relationship('User', foreign_keys=[user1_username])

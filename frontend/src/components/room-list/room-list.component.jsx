@@ -6,7 +6,7 @@ import RoomBadges from "../room-badges/room-badges.component";
 import "./room-list.styles.scss";
 
 const RoomList = ({ currentUser, room }) => {
-  const { name, created_by, user1, user2 } = room;
+  const { name, created_by, user1, user2, size } = room;
 
   let full;
   let str;
@@ -25,7 +25,7 @@ const RoomList = ({ currentUser, room }) => {
 
   return (
     <ListGroup.Item>
-      {name}
+      {`[${size}×${size}] ${name}`}
       <span>{` ${str}`}</span>
       <span>{`　Created by ${created_by}`}</span>
       <RoomBadges currentUser={currentUser} room={room} full={full} />

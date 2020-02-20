@@ -11,7 +11,7 @@ const StartGame = ({ roomId, player2 }) => {
     const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId, size: 3 })
+      body: JSON.stringify({ roomId })
     };
 
     handleFetch("/startgame", settings).then(() => {});
