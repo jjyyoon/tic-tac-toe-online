@@ -295,12 +295,7 @@ def on_join(data):
 
 @socketio.on('leave', namespace='/chat')
 def on_leave(data):
-    username = data['username']
-    room_id = data['room']
-    leave_room(room_id)
-
-    room = Room.query.filter_by(id=room_id).first()
-    delete_user_from_room(room, username)
+    leave_room(data['room'])
 
 
 @socketio.on('room created', namespace='/chat')
@@ -371,6 +366,27 @@ def load_grid():
     return jsonify({'grid': grid, 'turn': turn})
 
 
+def game_finished(room_id, game, result, winner, loser, leave):
+    if result == 'draw':
+        game.draw = True
+        message = 'This game ended in a draw!'
+    else:
+        game.winner_username = winner
+        game.loser_username = loser
+        game.draw = False
+
+        if leave:
+            message = f'{loser} has left the room, you won!'
+        else:
+            message = f'{winner} won!'
+
+    emit('game finished', message, namespace='/game', room=room_id)
+
+    room = Room.query.filter_by(id=room_id).first()
+    room.game_id = None
+    db.session.commit()
+
+
 @app.route('/checkgame', methods=['POST'])
 def check_game():
     data = request.get_json()
@@ -399,46 +415,58 @@ def check_game():
     # Update the game
     if current_player == player1:
         grid[x][y] = 1
-        otherPlayer = player2
+        other_player = player2
     else:
         grid[x][y] = 2
-        otherPlayer = player1
+        other_player = player1
 
     game.state = json.dumps(grid)
     game.turn = turn + 1
     db.session.commit()
 
-    emit('update a game', {'grid': grid, 'turn': otherPlayer},
+    emit('update a game', {'grid': grid, 'turn': other_player},
          namespace='/game', room=data['roomId'])
 
     # Check if the game ended
     result = check_result(grid, 3, x, y, turn)
     if result is None:
         return {}
-    elif result == 'draw':
-        game.draw = True
-        db.session.commit()
-
-        emit('game finished', 'This game ended in a draw!',
-             namespace='/game', room=data['roomId'])
     else:
-        game.winner_username = current_player
-        game.loser_username = otherPlayer
-        game.draw = False
-        db.session.commit()
+        game_finished(data['roomId'], game, result,
+                      current_player, other_player, False)
+        return {}
 
-        emit('game finished', f'{current_player} won!',
-             namespace='/game', room=data['roomId'])
 
-    room = Room.query.filter_by(id=data['roomId']).first()
-    room.game_id = None
-    db.session.commit()
+@app.route('/leftroom', methods=['POST'])
+def left_room():
+    data = request.get_json()
+
+    room = Room.query.filter_by(id=data['room']).first()
+
+    if room.game_id:
+        game = Game.query.filter_by(id=room.game_id).first()
+
+        if room.user1_username == data['username']:
+            winner = room.user2_username
+            loser = room.user1_username
+        else:
+            winner = room.user1_username
+            loser = room.user2_username
+
+        game_finished(data['room'], game, True, winner, loser, True)
+
+    delete_user_from_room(room, data['username'])
     return {}
 
 
 @socketio.on('join', namespace='/game')
 def on_join_game(data):
     join_room(data['roomId'])
+
+
+@socketio.on('leave', namespace='/game')
+def on_leave_game(data):
+    leave_room(data['roomId'])
 
 
 if __name__ == '__main__':
