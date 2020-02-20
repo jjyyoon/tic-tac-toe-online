@@ -6,10 +6,14 @@ import { handleFetch } from "../../handle-fetch";
 import { Form } from "react-bootstrap";
 import FormInput from "../form-input/form-input.component";
 
+import "./create-room-form.styles.scss";
+
 class CreateRoomForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      gameSize: [3, 4, 5, 6],
+      selectedSize: 3,
       checkboxChecked: false
     };
   }
@@ -18,18 +22,33 @@ class CreateRoomForm extends React.Component {
     this.setState(state => ({ checkboxChecked: !state.checkboxChecked }));
   };
 
+  handleClickRadio = e => {
+    const sizeClicked = e.target.id;
+
+    const { gameSize } = this.state;
+    gameSize.map(num => {
+      let size = `size${num}`;
+      if (size === sizeClicked) {
+        this.setState({ selectedSize: num });
+      } else {
+        document.getElementById(size).checked = false;
+      }
+    });
+  };
+
   handleSubmit = e => {
     e.preventDefault();
 
+    const { selectedSize, checkboxChecked } = this.state;
     const { userName } = this.props.currentUser;
     const roomName = e.target.roomName.value;
     let room;
 
-    if (e.target.roomPassword) {
+    if (checkboxChecked) {
       const roomPassword = e.target.roomPassword.value;
-      room = { roomName, roomPassword, userName };
+      room = { roomName, roomPassword, userName, selectedSize };
     } else {
-      room = { roomName, roomPassword: null, userName };
+      room = { roomName, roomPassword: null, userName, selectedSize };
     }
 
     const settings = {
@@ -46,11 +65,27 @@ class CreateRoomForm extends React.Component {
   };
 
   render() {
-    const { checkboxChecked } = this.state;
+    const { gameSize, checkboxChecked } = this.state;
 
     return (
       <Form onSubmit={this.handleSubmit} id="create-room-form">
         <FormInput name="roomName" type="text" label="Room Name" />
+        <Form.Group>
+          <p>
+            Game Size <span>(3×3 or 4×4, etc.)</span>
+          </p>
+          {gameSize.map((num, idx) => (
+            <Form.Check
+              key={num}
+              inline
+              label={num}
+              type="radio"
+              id={`size${num}`}
+              onClick={this.handleClickRadio}
+              checked={idx === 0 ? true : null}
+            />
+          ))}
+        </Form.Group>
         <Form.Group>
           <Form.Check
             type="checkbox"

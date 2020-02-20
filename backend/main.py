@@ -99,8 +99,8 @@ def auth():
 
 
 def frontend_room_info(room, deleted=False):
-    room_info = {'deleted': deleted, 'id': str(
-        room.id), 'name': room.name, 'created_by': room.created_by, 'user1': room.user1_username, 'user2': room.user2_username}
+    room_info = {'deleted': deleted, 'id': str(room.id), 'name': room.name, 'created_by': room.created_by,
+                 'user1': room.user1_username, 'user2': room.user2_username, 'size': room.game_size}
 
     if room.password:
         room_info['password'] = True,
@@ -172,13 +172,15 @@ def create_room():
     name = request.get_json()['roomName'],
     password = request.get_json()['roomPassword']
     user_name = request.get_json()['userName']
+    size = request.get_json()['selectedSize']
 
     pw_hash = password
 
     if password:
         pw_hash = bcrypt.generate_password_hash(password, 10).decode('utf-8')
 
-    new_room = Room(name=name, password=pw_hash, created_by=user_name)
+    new_room = Room(name=name, password=pw_hash,
+                    created_by=user_name, game_size=size)
     db.session.add(new_room)
     db.session.commit()
 
@@ -331,11 +333,7 @@ def game_state():
 def start_game():
     room_id = request.get_json()['roomId']
     room = Room.query.filter_by(id=room_id).first()
-
-    # Will add a size column into the Room table, then it can also bring size info from the Room table.
-    size = request.get_json()['size']
-
-    grid = make_grid(size)
+    grid = make_grid(room.game_size)
     grid_db = json.dumps(grid)
 
     new_game = Game(state=grid_db, player1_username=room.user1_username,
@@ -406,7 +404,9 @@ def check_game():
          namespace='/game', room=data['roomId'])
 
     # Check if the game ended
-    result = check_result(grid, 3, x, y, turn)
+    room = Room.query.filter_by(id=data['roomId']).first()
+
+    result = check_result(grid, room.game_size, x, y, turn)
     if result is None:
         return {}
     elif result == 'draw':
@@ -424,7 +424,6 @@ def check_game():
         emit('game finished', f'{current_player} won!',
              namespace='/game', room=data['roomId'])
 
-    room = Room.query.filter_by(id=data['roomId']).first()
     room.game_id = None
     db.session.commit()
     return {}
