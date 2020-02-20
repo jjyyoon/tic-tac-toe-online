@@ -11,6 +11,7 @@ class Game(db.Model):
     player2_username = db.Column(
         db.String(80), db.ForeignKey('user.username'), nullable=False)
     turn = db.Column(db.Integer, nullable=False)
+    failed_lines = db.Column(db.Text, nullable=False)
     winner_username = db.Column(db.String(80), db.ForeignKey('user.username'))
     loser_username = db.Column(db.String(80), db.ForeignKey('user.username'))
     draw = db.Column(db.Boolean)
