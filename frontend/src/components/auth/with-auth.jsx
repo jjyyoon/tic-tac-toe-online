@@ -17,8 +17,11 @@ const WithAuth = WrappedComponent => {
     componentDidMount() {
       handleFetch("/auth", null, 401).then(({ data }) => {
         if (!data) {
-          alert("You are not authorized to view this page, please sign in.");
-          this.props.history.push("/signin");
+          this.props.history.push("/error", {
+            heading:
+              "You are not authorized to view this page, please sign in.",
+            page: "signin"
+          });
         } else {
           this.setState({
             userName: data.user_name,

@@ -1,4 +1,4 @@
-from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, render_template, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
 from flask_bcrypt import Bcrypt
@@ -26,6 +26,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 @app.route('/signin')
+@app.route('/error')
 def index():
     return render_template('index.html')
 
@@ -164,13 +165,7 @@ def list():
 @app.route('/game/<uuid:room_id>')
 @jwt_required
 def game(room_id):
-    username = get_jwt_identity()
-    room = Room.query.filter_by(id=room_id).first()
-    if room.user1_username and room.user2_username and room.user1_username != username and room.user2_username != username:
-        flash('Sorry, this room is full.')
-        return redirect(url_for('list'))
-    else:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @app.route('/createroom', methods=['POST'])
@@ -379,7 +374,7 @@ def game_finished(room, game, result, winner, loser, leave):
         else:
             message = f'{winner} won!'
 
-    emit('game finished', message, namespace='/game', room=room.id)
+    emit('game finished', message, namespace='/game', room=str(room.id))
 
     room.game_id = None
     db.session.commit()
