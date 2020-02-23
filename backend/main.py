@@ -15,8 +15,8 @@ from models.game import Game
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
-app.config.from_pyfile('config.py')
-# app.config.from_envvar('APP_CONFIG_FILE')
+app.config.from_pyfile('config.py', silent=True)
+app.config.from_envvar('APP_CONFIG_FILE', silent=True)
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
@@ -474,4 +474,4 @@ def on_leave_game(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')
