@@ -15,9 +15,9 @@ class Header extends React.Component {
   }
 
   checkSignedIn = () => {
-    handleFetch("/auth", null, 401).then(({ data }) => {
-      if (data) {
-        this.setState({ username: data.user_name });
+    handleFetch("/header", null, 401).then(({ data }) => {
+      if (data.username) {
+        this.setState({ username: data.username });
       }
     });
   };
