@@ -65,7 +65,7 @@ class CreateRoomForm extends React.Component {
   };
 
   render() {
-    const { gameSize, checkboxChecked } = this.state;
+    const { gameSize, selectedSize, checkboxChecked } = this.state;
 
     return (
       <Form onSubmit={this.handleSubmit} id="create-room-form">
@@ -74,7 +74,7 @@ class CreateRoomForm extends React.Component {
           <p>
             Game Size <span>(3×3 or 4×4, etc.)</span>
           </p>
-          {gameSize.map((num, idx) => (
+          {gameSize.map(num => (
             <Form.Check
               key={num}
               inline
@@ -82,7 +82,7 @@ class CreateRoomForm extends React.Component {
               type="radio"
               id={`size${num}`}
               onClick={this.handleClickRadio}
-              checked={idx === 0 ? true : null}
+              checked={num === selectedSize ? true : null}
             />
           ))}
         </Form.Group>
