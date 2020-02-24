@@ -2,8 +2,10 @@ import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
 import { Modal, Badge, Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
 
-const CustomModal = ({ badgeVariant, title, header, children, form }) => {
+const CustomModal = ({ color, title, header, children, form }) => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -11,8 +13,9 @@ const CustomModal = ({ badgeVariant, title, header, children, form }) => {
 
   return (
     <div>
-      <Badge as={Link} variant={badgeVariant} onClick={handleShow}>
-        {title}
+      <Badge as={Link} variant={color} onClick={handleShow}>
+        {`${title} `}
+        {title === "Join" ? <FontAwesomeIcon icon={faLock} /> : null}
       </Badge>
 
       <Modal show={show} onHide={handleClose}>
