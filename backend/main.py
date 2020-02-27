@@ -1,6 +1,6 @@
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
+    JWTManager, jwt_required, jwt_optional, create_access_token, get_jwt_identity, get_jwt_claims, set_access_cookies, unset_jwt_cookies)
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import or_
@@ -96,6 +96,16 @@ def auth():
         'user_email': get_jwt_claims()['email']
     }
     return jsonify(res), 200
+
+
+@app.route('/header', methods=['GET'])
+@jwt_optional
+def header():
+    username = get_jwt_identity()
+    if username:
+        return jsonify({'username': username}), 200
+    else:
+        return jsonify({'username': None}), 200
 
 
 def frontend_room_info(room, deleted=False):
