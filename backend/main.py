@@ -12,6 +12,10 @@ from models.database import db
 from models.user import User
 from models.room import Room
 from models.game import Game
+import os
+
+FLASK_HOST = os.environ.get("FLASK_HOST", default=None)
+FLASK_PORT = os.environ.get("FLASK_PORT", default=None)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
@@ -484,4 +488,4 @@ def on_leave_game(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app, host=FLASK_HOST, port=FLASK_PORT, debug=True)
