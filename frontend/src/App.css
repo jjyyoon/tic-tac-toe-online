@@ -1,6 +1,9 @@
-.App {
+.App,
+.col,
+.col-md-auto,
+.card,
+.list-group {
   height: 100%;
-  font-family: "Noto Sans KR", sans-serif;
 }
 
 .row {
@@ -11,12 +14,8 @@
   justify-content: space-between;
 }
 
-.col {
-  height: 100%;
-}
-
-.card {
-  height: 100%;
+.btn {
+  font-weight: 500;
 }
 
 a {

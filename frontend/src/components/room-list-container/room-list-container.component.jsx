@@ -49,7 +49,7 @@ class RoomListContainer extends React.Component {
         <Card.Header as="h3">
           Rooms
           <CustomModal
-            badgeVariant="info"
+            color="info"
             title="Create a Room"
             header={true}
             form="create-room-form"

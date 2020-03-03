@@ -38,6 +38,17 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
     });
   };
 
+  let color;
+  let title;
+
+  if (full) {
+    color = "secondary";
+    title = "Full";
+  } else {
+    color = "warning";
+    title = "Join";
+  }
+
   return (
     <div className="badge-container">
       {currentUser.userName === created_by ? (
@@ -52,8 +63,8 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
       ) : null}
       {password ? (
         <CustomModal
-          badgeVariant={full ? "secondary" : "warning"}
-          title="Join"
+          color={color}
+          title={title}
           header={false}
           form="room-password-form"
         >
@@ -64,9 +75,9 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
           as={Link}
           onClick={handleClick}
           to={`/game/${id}`}
-          variant={full ? "secondary" : "warning"}
+          variant={color}
         >
-          {full ? "Full" : "Join"}
+          {title}
         </Badge>
       )}
     </div>

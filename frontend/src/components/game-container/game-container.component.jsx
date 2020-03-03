@@ -75,10 +75,10 @@ class GameContainer extends React.Component {
       <Card>
         <Card.Header as="h3">
           <span>
-            <h6>Player 1:</h6> {player1}
+            <h5>Player 1:</h5> {player1}
           </span>
           <div>
-            <h6>Player 2:</h6> {player2 ? player2 : "Waiting"}
+            <h5>Player 2:</h5> {player2 ? player2 : "Waiting"}
           </div>
         </Card.Header>
         {gameState ? (
