@@ -2,6 +2,7 @@ import React from "react";
 import { handleFetch } from "../../handle-fetch";
 
 import { Card, Table } from "react-bootstrap";
+import AlertBox from "../alert-box/alert-box.component";
 import Space from "../space/space.component";
 
 import "./grid.styles.scss";
@@ -38,14 +39,24 @@ class Grid extends React.Component {
   }
 
   render() {
-    const { currentUser, otherPlayer, roomId, gameId } = this.props;
+    const { currentUser, otherPlayer, gameResult, readyToRestart } = this.props;
     const { grid, currentTurn, spaceSize } = this.state;
+
+    let turn;
+    if (currentUser === currentTurn) {
+      turn = "Your Turn";
+    } else {
+      turn = `${otherPlayer}'s Turn`;
+    }
 
     return (
       <Card.Body>
-        <span>
-          {currentUser === currentTurn ? "Your Turn" : `${otherPlayer}'s Turn`}
-        </span>
+        <AlertBox
+          color="success"
+          heading={gameResult ? gameResult : turn}
+          btnFunc={gameResult ? "close" : null}
+          funcAdded={readyToRestart}
+        />
         <Table>
           <tbody>
             {grid
@@ -57,9 +68,7 @@ class Grid extends React.Component {
                         value={col}
                         x={rowIdx}
                         y={colIdx}
-                        currentUser={currentUser}
-                        roomId={roomId}
-                        gameId={gameId}
+                        {...this.props}
                         clickable={currentUser === currentTurn ? true : false}
                       />
                     ))}

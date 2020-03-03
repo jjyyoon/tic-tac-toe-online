@@ -3,59 +3,97 @@ import { withRouter } from "react-router";
 
 import { handleFetch } from "../../handle-fetch";
 
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Spinner } from "react-bootstrap";
 import WithAuth from "../../components/auth/with-auth";
 import GameContainer from "../../components/game-container/game-container.component";
 import ChatWindow from "../../components/chat-window/chat-window.component";
 
+import "./game-page.styles.scss";
+
 class GamePage extends React.Component {
-  componentDidMount() {
-    const { currentUser, chatSocket, room } = this.props;
-    chatSocket.emit("join", { username: currentUser.userName, room });
+  constructor(props) {
+    super(props);
+    this.state = {
+      checkedFull: false,
+      full: null
+    };
   }
 
-  componentWillUnmount() {
-    const { currentUser, chatSocket, room } = this.props;
-    const username = currentUser.userName;
-    chatSocket.emit("leave", { username, room });
+  componentDidMount() {
+    const { currentUser, chatSocket, room, history } = this.props;
 
     const settings = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, room })
+      body: JSON.stringify({ roomId: room })
     };
 
-    handleFetch("/leftroom", settings).then(() => {});
+    handleFetch("/check_availability", settings).then(({ data }) => {
+      if (data.count === 2) {
+        this.setState({ full: true });
+        history.push("/error", {
+          heading: "Sorry, this room is now full :(",
+          page: "list"
+        });
+      } else {
+        this.setState({ checkedFull: true });
+        chatSocket.emit("join", { username: currentUser.userName, room });
+      }
+    });
   }
 
-  handleClick = () => {
-    const { history } = this.props;
-    history.push("/list");
-  };
+  componentWillUnmount() {
+    const { full } = this.state;
+
+    if (!full) {
+      const { currentUser, chatSocket, room } = this.props;
+      const username = currentUser.userName;
+      chatSocket.emit("leave", { username, room });
+
+      const settings = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, room })
+      };
+
+      handleFetch("/leftroom", settings).then(() => {});
+    }
+  }
 
   render() {
+    const { checkedFull } = this.state;
     const { currentUser, chatSocket, room } = this.props;
     const username = currentUser.userName.toString();
 
-    return (
-      <Row className="game-page">
-        <Col className="left">
-          <GameContainer
-            currentUser={username}
-            chatSocket={chatSocket}
-            roomId={room}
-          />
-        </Col>
-        <Col className="right">
-          <ChatWindow
-            currentUser={currentUser}
-            chatSocket={chatSocket}
-            events={["load a chat", "join message", "leave message"]}
-            roomId={room}
-          />
-        </Col>
-      </Row>
-    );
+    if (checkedFull) {
+      return (
+        <Row className="game-page">
+          <Col className="left">
+            <GameContainer
+              currentUser={username}
+              chatSocket={chatSocket}
+              roomId={room}
+            />
+          </Col>
+          <Col className="right">
+            <ChatWindow
+              currentUser={currentUser}
+              chatSocket={chatSocket}
+              events={["load a chat", "join message", "leave message"]}
+              roomId={room}
+            />
+          </Col>
+        </Row>
+      );
+    } else {
+      return (
+        <div className="spinner-container">
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      );
+    }
   }
 }
 

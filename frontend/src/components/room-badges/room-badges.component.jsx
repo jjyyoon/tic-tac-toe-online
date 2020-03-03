@@ -1,16 +1,17 @@
-import React from "react";
-import { withRouter } from "react-router";
+import React, { useState, useRef } from "react";
 
 import { handleFetch } from "../../handle-fetch";
 
 import { Link } from "react-router-dom";
-import { Badge } from "react-bootstrap";
+import { Badge, Overlay, Tooltip } from "react-bootstrap";
 import CustomModal from "../custom-modal/custom-modal.component";
 import PwDropdown from "../pw-dropdown/pw-dropdown.component";
 
 import "./room-badges.styles.scss";
 
-const RoomBadges = ({ history, currentUser, room, full }) => {
+const RoomBadges = ({ currentUser, room, full }) => {
+  const [show, setShow] = useState(false);
+  const target = useRef(null);
   const { id, created_by, password } = room;
 
   const settings = {
@@ -19,21 +20,12 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
     body: JSON.stringify({ roomId: id })
   };
 
-  const handleClick = e => {
-    handleFetch("/check_availability", settings).then(({ data }) => {
-      if (data.count === 2) {
-        alert("Sorry, this room is now full :(");
-        history.push("/list");
-      }
-    });
-  };
-
   const handleDelete = e => {
     handleFetch("/check_availability", settings).then(({ data }) => {
       if (data.count === 0) {
         handleFetch("/deleteroom", settings);
       } else {
-        alert("Sorry, this room is occupied. Please try later.");
+        setShow(!show);
       }
     });
   };
@@ -52,14 +44,20 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
   return (
     <div className="badge-container">
       {currentUser.userName === created_by ? (
-        <Badge
-          as={Link}
-          variant="danger"
-          className="badge-delete"
-          onClick={handleDelete}
-        >
-          Delete
-        </Badge>
+        <div>
+          <Badge
+            as={Link}
+            variant="danger"
+            className="badge-delete"
+            onClick={handleDelete}
+            ref={target}
+          >
+            Delete
+          </Badge>
+          <Overlay target={target.current} show={show} placement="left">
+            <Tooltip>Sorry, this room is occupied. Please try later.</Tooltip>
+          </Overlay>
+        </div>
       ) : null}
       {password ? (
         <CustomModal
@@ -68,12 +66,11 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
           header={false}
           form="room-password-form"
         >
-          <PwDropdown roomId={id} handleJoin={handleClick} full={full} />
+          <PwDropdown roomId={id} />
         </CustomModal>
       ) : (
         <Badge
           as={Link}
-          onClick={handleClick}
           to={`/game/${id}`}
           variant={color}
         >
@@ -84,4 +81,4 @@ const RoomBadges = ({ history, currentUser, room, full }) => {
   );
 };
 
-export default withRouter(RoomBadges);
+export default RoomBadges;

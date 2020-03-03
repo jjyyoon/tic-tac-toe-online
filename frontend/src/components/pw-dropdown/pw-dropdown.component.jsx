@@ -16,7 +16,7 @@ class PwDropdown extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { roomId, handleJoin, history } = this.props;
+    const { roomId, history } = this.props;
     const password = e.target.password.value;
 
     const settings = {
@@ -27,7 +27,6 @@ class PwDropdown extends React.Component {
 
     handleFetch("/pwcheck", settings).then(({ data }) => {
       if (data.match) {
-        handleJoin();
         history.push(`/game/${roomId}`);
       } else {
         this.setState({ err: "Wrong password for this room!" });

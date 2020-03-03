@@ -2,17 +2,14 @@
   .left .card-body {
     text-align: center;
 
-    span {
-      background-color: rgba(255, 229, 100, 0.3);
-      border-left: 4px solid #ffe564;
-      padding: 0.25rem;
-      font-size: 1.5rem;
-      font-weight: 500;
+    .alert {
+      display: inline-block;
     }
 
     .table {
       width: 75%;
       height: 75%;
+      top: 55%;
       table-layout: fixed;
     }
   }

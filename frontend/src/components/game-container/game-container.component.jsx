@@ -17,7 +17,8 @@ class GameContainer extends React.Component {
       gameState: false,
       gameId: null,
       player1: null,
-      player2: null
+      player2: null,
+      gameResult: null
     };
 
     const { chatSocket } = props;
@@ -31,8 +32,7 @@ class GameContainer extends React.Component {
     });
 
     gameSocket.on("game finished", message => {
-      alert(message);
-      this.setState({ gameState: false });
+      this.setState({ gameResult: message });
     });
   }
 
@@ -61,9 +61,14 @@ class GameContainer extends React.Component {
     gameSocket.emit("leave", { roomId });
   }
 
+  readyToRestart = () => {
+    this.setState({ gameState: false, gameResult: null });
+  };
+
   render() {
     const { roomId, currentUser } = this.props;
-    const { gameSocket, gameState, gameId, player1, player2 } = this.state;
+    const { gameState, player1, player2 } = this.state;
+
     let otherPlayer;
     if (player1 === currentUser) {
       otherPlayer = player2;
@@ -83,11 +88,11 @@ class GameContainer extends React.Component {
         </Card.Header>
         {gameState ? (
           <Grid
-            gameSocket={gameSocket}
+            {...this.state}
             roomId={roomId}
-            gameId={gameId}
             currentUser={currentUser}
             otherPlayer={otherPlayer}
+            readyToRestart={this.readyToRestart}
           />
         ) : (
           <StartGame roomId={roomId} player2={player2} />
