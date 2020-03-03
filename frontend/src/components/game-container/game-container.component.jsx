@@ -61,7 +61,7 @@ class GameContainer extends React.Component {
     gameSocket.emit("leave", { roomId });
   }
 
-  readyTorestart = () => {
+  readyToRestart = () => {
     this.setState({ gameState: false, gameResult: null });
   };
 
