@@ -92,7 +92,7 @@ class GameContainer extends React.Component {
             roomId={roomId}
             currentUser={currentUser}
             otherPlayer={otherPlayer}
-            readyTorestart={this.readyTorestart}
+            readyToRestart={this.readyToRestart}
           />
         ) : (
           <StartGame roomId={roomId} player2={player2} />

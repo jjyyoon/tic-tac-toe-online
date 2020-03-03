@@ -39,7 +39,7 @@ class Grid extends React.Component {
   }
 
   render() {
-    const { currentUser, otherPlayer, gameResult, readyTorestart } = this.props;
+    const { currentUser, otherPlayer, gameResult, readyToRestart } = this.props;
     const { grid, currentTurn, spaceSize } = this.state;
 
     let turn;
@@ -55,7 +55,7 @@ class Grid extends React.Component {
           color="success"
           heading={gameResult ? gameResult : turn}
           btnFunc={gameResult ? "close" : null}
-          funcAdded={readyTorestart}
+          funcAdded={readyToRestart}
         />
         <Table>
           <tbody>
