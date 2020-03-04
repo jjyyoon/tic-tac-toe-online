@@ -1,8 +1,6 @@
 # Tic-tac-toe Online
-
-You can check how it looks like here: [Tic-tac-toe Online] 
-You can also execute this application by following the instruction below.
-
+You can check how it looks like here: [Tic-tac-toe Online]  
+You can also execute this application by following the instructions below.
 
 ## Instructions
 1. Download [Python]
@@ -33,7 +31,7 @@ You can also execute this application by following the instruction below.
     ```sh
     $ pip install -r requirements.txt
     ```
-3. Create a folder 'instance' in the 'backend' folder and create a file 'config.py' that contains configuration below.
+3. Create a folder 'instance' in the 'backend' folder and create a file 'config.py' that contains configurations below.
     ```python
     DEBUG = True
     JWT_SECRET_KEY = 'super-secret'  # Change this!
@@ -45,9 +43,12 @@ You can also execute this application by following the instruction below.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ```
     _About SQLALCHEMY_DATABASE_URI_
-    - Change username, password, port and mydatabase to yours. Note that you need to create your database and the user needs to have permissions to create tables.
-     E.g. To check your username and port using pgAdmin: right click 'PostgreSQL' on the left side > click 'Properties' > click 'Connection' tap.
-    - For more information, visit here: [SQLAlchemy Documentation]
+    - First, you should create your database. To do it, you must be a superuser or have the CREATE privilege. Then change 'mydatabase' to your database name.
+    - Change username, password and port to yours. (e.g. Using pgAdmin, you can check your username and port like this: Right click 'PostgreSQL' on the left side > Click 'Properties' > Click 'Connection' tap.)
+    - For more information, visit these websites: 
+        - [pgAdmin: Database Dialog]
+        - [PostgreSQL: Creating a Database]
+        - [SQLAlchemy: Database Urls]
 4. Create tables
     ```sh
     $ python create_tables.py
@@ -64,4 +65,7 @@ You can also execute this application by following the instruction below.
    [npm]: <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>
    [PostgreSQL]: <https://www.postgresql.org/>
    [GitHub Help]: <https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository>
-   [SQLAlchemy Documentation]: <https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls>
+   [pgAdmin: Database Dialog]: <https://www.pgadmin.org/docs/pgadmin4/latest/database_dialog.html>
+   [PostgreSQL: Creating a Database]: <https://www.postgresql.org/docs/current/manage-ag-createdb.html>
+   [SQLAlchemy: Database Urls]: <https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls>
+
