@@ -26,12 +26,7 @@ const CustomModal = ({ color, title, header, children, form }) => {
         ) : null}
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="info"
-            onClick={handleClose}
-            type="submit"
-            form={form}
-          >
+          <Button variant="info" type="submit" form={form}>
             {title}
           </Button>
         </Modal.Footer>
