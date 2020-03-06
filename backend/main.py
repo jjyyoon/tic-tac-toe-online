@@ -482,5 +482,10 @@ def on_leave_game(data):
     leave_room(data['roomId'])
 
 
+@socketio.on('ready', namespace='/game')
+def on_ready(data):
+    emit('ready', namespace='/game', room=data['roomId'])
+
+
 if __name__ == '__main__':
     socketio.run(app, host=FLASK_HOST, port=FLASK_PORT)

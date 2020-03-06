@@ -34,6 +34,10 @@ class GameContainer extends React.Component {
     gameSocket.on("game finished", message => {
       this.setState({ gameResult: message });
     });
+
+    gameSocket.on("ready", () =>
+      this.setState({ gameState: false, gameResult: null })
+    );
   }
 
   componentDidMount() {
@@ -62,7 +66,9 @@ class GameContainer extends React.Component {
   }
 
   readyToRestart = () => {
-    this.setState({ gameState: false, gameResult: null });
+    const { gameSocket } = this.state;
+    const { roomId } = this.props;
+    gameSocket.emit("ready", { roomId });
   };
 
   render() {
