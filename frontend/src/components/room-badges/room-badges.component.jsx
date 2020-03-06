@@ -14,16 +14,10 @@ const RoomBadges = ({ currentUser, room, full }) => {
   const target = useRef(null);
   const { id, created_by, password } = room;
 
-  const settings = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ roomId: id })
-  };
-
   const handleDelete = e => {
-    handleFetch("/check_availability", settings).then(({ data }) => {
+    handleFetch("/check_availability", { roomId: id }).then(data => {
       if (data.count === 0) {
-        handleFetch("/deleteroom", settings);
+        handleFetch("/deleteroom", { roomId: id });
       } else {
         setShow(!show);
       }
@@ -69,11 +63,7 @@ const RoomBadges = ({ currentUser, room, full }) => {
           <PwDropdown roomId={id} />
         </CustomModal>
       ) : (
-        <Badge
-          as={Link}
-          to={`/game/${id}`}
-          variant={color}
-        >
+        <Badge as={Link} to={`/game/${id}`} variant={color}>
           {title}
         </Badge>
       )}

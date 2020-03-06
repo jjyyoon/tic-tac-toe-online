@@ -15,8 +15,10 @@ class Header extends React.Component {
   }
 
   checkSignedIn = () => {
-    handleFetch("/header", null, 401).then(({ data }) => {
-      if (data.username) {
+    handleFetch("/header", null, 401).then(data => {
+      if (!data) {
+        return;
+      } else {
         this.setState({ username: data.username });
       }
     });
@@ -29,13 +31,7 @@ class Header extends React.Component {
   handleClick = () => {
     const { username } = this.state;
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username })
-    };
-
-    handleFetch("/logout", settings).then(() => {
+    handleFetch("/logout", { username }).then(() => {
       this.props.history.push("/");
       this.setState({ username: null });
     });

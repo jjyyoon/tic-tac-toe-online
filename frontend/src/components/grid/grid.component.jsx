@@ -25,13 +25,8 @@ class Grid extends React.Component {
 
   componentDidMount() {
     const { gameId } = this.props;
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ gameId })
-    };
 
-    handleFetch("/loadgame", settings).then(({ data }) => {
+    handleFetch("/loadgame", { gameId }).then(data => {
       const { grid, turn } = data;
       const spaceSize = `${Math.floor(100 / grid.length)}%`;
       this.setState({ grid, currentTurn: turn, spaceSize });

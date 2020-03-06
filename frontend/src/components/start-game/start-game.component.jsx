@@ -8,13 +8,7 @@ import "./start-game.styles.scss";
 
 const StartGame = ({ roomId, player2 }) => {
   const handleClick = () => {
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId })
-    };
-
-    handleFetch("/startgame", settings).then(() => {});
+    handleFetch("/startgame", { roomId });
   };
 
   return (

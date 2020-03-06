@@ -19,13 +19,7 @@ class SignIn extends React.Component {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    };
-
-    handleFetch("/login", settings).then(({ data }) => {
+    handleFetch("/login", { email, password }).then(data => {
       if (data.user_name) {
         this.props.history.push("/list");
       } else {

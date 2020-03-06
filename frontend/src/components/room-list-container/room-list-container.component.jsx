@@ -35,7 +35,7 @@ class RoomListContainer extends React.Component {
   }
 
   componentDidMount() {
-    handleFetch("/loadrooms").then(({ data }) =>
+    handleFetch("/loadrooms").then(data =>
       this.setState({ rooms: data.rooms })
     );
   }

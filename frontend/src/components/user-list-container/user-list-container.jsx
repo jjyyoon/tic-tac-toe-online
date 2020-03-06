@@ -26,7 +26,7 @@ class UserListContainer extends React.Component {
   }
 
   componentDidMount() {
-    handleFetch("/loadusers").then(({ data }) =>
+    handleFetch("/loadusers").then(data =>
       this.setState({ users: data.user_online })
     );
   }
