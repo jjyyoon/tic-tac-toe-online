@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:latest
+FROM nikolaik/python-nodejs:python3.8-nodejs13-alpine
 
 COPY ./frontend/config /app/frontend/config
 COPY ./frontend/public /app/frontend/public
@@ -18,6 +18,11 @@ COPY ./backend/*.py /app/backend/
 COPY ./backend/requirements.txt /app/backend/
 
 WORKDIR /app/backend/
+RUN apk upgrade --update
+RUN apk add --update --no-cache libffi-dev bash postgresql-client
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+    gcc libc-dev linux-headers postgresql-dev
 RUN pip install -r requirements.txt
+RUN apk del .tmp-build-deps
 
-CMD ["python", "main.py"]
+CMD ["sh", "-c", "python create_tables.py && python main.py"]
