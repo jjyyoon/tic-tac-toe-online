@@ -14,13 +14,29 @@ from models.room import Room
 from models.game import Game
 import os
 
-FLASK_HOST = os.environ.get("FLASK_HOST", default=None)
-FLASK_PORT = os.environ.get("FLASK_PORT", default=None)
+FLASK_HOST = os.environ.get('FLASK_HOST', default=None)
+FLASK_PORT = os.environ.get('FLASK_PORT', default=None)
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', default=None)
+DB_USER = os.environ.get('DB_USER', default=None)
+DB_PASSWORD = os.environ.get('DB_PASSWORD', default=None)
+DB_HOST = os.environ.get('DB_HOST', default=None)
+DB_NAME = os.environ.get('DB_NAME', default=None)
+JWT_COOKIE_SECURE = os.environ.get('JWT_COOKIE_SECURE', default=None)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
 app.config.from_pyfile('config.py', silent=True)
 app.config.from_envvar('APP_CONFIG_FILE', silent=True)
+
+if DB_USER and DB_PASSWORD and DB_HOST and DB_NAME:
+    app.config['SQLALCHEMY_DATABASE_URI'] = \
+        f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
+
+if JWT_SECRET_KEY:
+    app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
+
+if JWT_COOKIE_SECURE:
+    app.config['JWT_COOKIE_SECURE'] = bool(int(JWT_COOKIE_SECURE))
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
