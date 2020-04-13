@@ -1,0 +1,47 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "tic-tac-toe-online"
+  namespace: "default"
+  labels:
+    app: "tic-tac-toe-online"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "tic-tac-toe-online"
+  template:
+    metadata:
+      labels:
+        app: "tic-tac-toe-online"
+    spec:
+      containers:
+        - name: "tic-tac-toe-online"
+          env:
+            - name: FLASK_HOST
+              value: "0.0.0.0"
+            - name: FLASK_PORT
+              value: "5000"
+            - name: DB_HOST
+              value: "postgres:5432"
+            - name: DB_NAME
+              value: "tic_tac_toe_db"
+            - name: JWT_COOKIE_SECURE
+              value: "0"
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tic-tac-toe-online-secrets
+                  key: JWT_SECRET_KEY
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tic-tac-toe-online-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tic-tac-toe-online-secrets
+                  key: DB_PASSWORD
+          image: "gcr.io/tic-tac-toe-online-265519/tic-tac-toe-online"
+          imagePullPolicy: Always
