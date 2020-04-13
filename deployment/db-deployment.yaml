@@ -1,0 +1,43 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "postgres"
+  namespace: "default"
+  labels:
+    app: "postgres"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "postgres"
+  template:
+    metadata:
+      labels:
+        app: "postgres"
+    spec:
+      containers:
+        - name: "postgres"
+          image: "postgres:12.2-alpine"
+          env:
+            - name: POSTGRES_DB
+              value: "tic_tac_toe_db"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tic-tac-toe-online-secrets
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tic-tac-toe-online-secrets
+                  key: DB_PASSWORD
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/db-data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
