@@ -24,9 +24,9 @@ class CreateRoomForm extends React.Component {
 
   handleClickRadio = e => {
     const sizeClicked = e.target.id;
-
     const { gameSize } = this.state;
-    gameSize.map(num => {
+
+    gameSize.forEach(num => {
       let size = `size${num}`;
       if (size === sizeClicked) {
         this.setState({ selectedSize: num });
