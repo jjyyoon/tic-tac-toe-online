@@ -32,13 +32,7 @@ class SignUp extends React.Component {
       return;
     }
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userName, email, password })
-    };
-
-    handleFetch("/register", settings).then(({ data }) => {
+    handleFetch("/register", { userName, email, password }).then(data => {
       if (data.user_name) {
         this.props.history.push("/list");
         return;

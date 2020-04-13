@@ -15,7 +15,7 @@ const WithAuth = WrappedComponent => {
     }
 
     componentDidMount() {
-      handleFetch("/auth", null, 401).then(({ data }) => {
+      handleFetch("/auth", null, 401).then(data => {
         if (!data) {
           this.props.history.push("/error", {
             heading:

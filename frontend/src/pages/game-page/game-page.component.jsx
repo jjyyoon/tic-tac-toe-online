@@ -22,13 +22,7 @@ class GamePage extends React.Component {
   componentDidMount() {
     const { currentUser, chatSocket, room, history } = this.props;
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId: room })
-    };
-
-    handleFetch("/check_availability", settings).then(({ data }) => {
+    handleFetch("/check_availability", { roomId: room }).then(data => {
       if (data.count === 2) {
         this.setState({ full: true });
         history.push("/error", {
@@ -50,13 +44,7 @@ class GamePage extends React.Component {
       const username = currentUser.userName;
       chatSocket.emit("leave", { username, room });
 
-      const settings = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, room })
-      };
-
-      handleFetch("/leftroom", settings).then(() => {});
+      handleFetch("/leftroom", { username, room });
     }
   }
 

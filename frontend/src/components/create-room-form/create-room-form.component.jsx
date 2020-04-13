@@ -51,13 +51,7 @@ class CreateRoomForm extends React.Component {
       room = { roomName, roomPassword: null, userName, selectedSize };
     }
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(room)
-    };
-
-    handleFetch("/createroom", settings).then(({ data }) => {
+    handleFetch("/createroom", room).then(data => {
       const { chatSocket, history } = this.props;
       chatSocket.emit("room created", { roomId: data.room_id });
       history.push(`/game/${data.room_id}`);

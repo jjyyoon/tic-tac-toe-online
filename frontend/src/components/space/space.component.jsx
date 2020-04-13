@@ -7,13 +7,7 @@ import "./space.styles.scss";
 
 const Space = ({ value, x, y, currentUser, roomId, gameId, clickable }) => {
   const handleClick = e => {
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentUser, roomId, gameId, x: x, y: y })
-    };
-
-    handleFetch("/checkgame", settings);
+    handleFetch("/checkgame", { currentUser, roomId, gameId, x: x, y: y });
   };
 
   let color;

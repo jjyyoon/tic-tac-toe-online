@@ -43,13 +43,7 @@ class GameContainer extends React.Component {
   componentDidMount() {
     const { roomId } = this.props;
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId })
-    };
-
-    handleFetch("/gamestate", settings).then(({ data }) => {
+    handleFetch("/gamestate", { roomId }).then(data => {
       if (data.game_state) {
         this.setState({ gameState: true, gameId: data.game_id });
       }

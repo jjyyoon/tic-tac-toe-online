@@ -19,13 +19,7 @@ class PwDropdown extends React.Component {
     const { roomId, history } = this.props;
     const password = e.target.password.value;
 
-    const settings = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId, password })
-    };
-
-    handleFetch("/pwcheck", settings).then(({ data }) => {
+    handleFetch("/pwcheck", { roomId, password }).then(data => {
       if (data.match) {
         history.push(`/game/${roomId}`);
       } else {
