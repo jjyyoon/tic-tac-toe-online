@@ -27,7 +27,7 @@ spec:
             - name: DB_NAME
               value: "tic_tac_toe_db"
             - name: JWT_COOKIE_SECURE
-              value: "0"
+              value: "1"
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
