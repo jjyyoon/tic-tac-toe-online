@@ -60,7 +60,7 @@ You can also execute this application by following the instructions below.
 
 
    
-   [Tic-tac-toe Online]: <https://jjyyoon.github.io/>
+   [Tic-tac-toe Online]: <https://jjyyoon.github.io/#/project/tictactoe>
    [Python]: <https://www.python.org/>
    [npm]: <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>
    [PostgreSQL]: <https://www.postgresql.org/>
