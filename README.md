@@ -69,3 +69,13 @@ You can also execute this application by following the instructions below.
    [PostgreSQL: Creating a Database]: <https://www.postgresql.org/docs/current/manage-ag-createdb.html>
    [SQLAlchemy: Database Urls]: <https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls>
 
+
+**Docker:** 
+1. Install docker (with docker-compose)
+
+2. From the root folder, run:
+    ```sh
+    $ docker-compose up
+    ```
+
+3. Application will be available on `localhost:5000`
