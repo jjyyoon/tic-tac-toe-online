@@ -1,0 +1,35 @@
+  version: '2.1'
+    
+  services:
+    db:
+      image: postgres
+      volumes:
+        - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      environment:
+        - POSTGRES_DB=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+    web:
+      build: .
+      volumes:
+        - .:/backend
+      ports:
+        - "5000:5000"
+      depends_on:
+        db:
+          condition: service_healthy
+      environment:
+        - FLASK_HOST=0.0.0.0
+        - FLASK_PORT=5000
+        - DB_NAME=tic_tac_toe_db
+        - DB_USER=postgres
+        - DB_PASSWORD=postgres
+        - DB_HOST=db:5432
+        - JWT_SECRET_KEY=secret
+        - JWT_COOKIE_SECURE=0
+        - DEBUG=1

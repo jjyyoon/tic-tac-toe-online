@@ -22,6 +22,7 @@ DB_PASSWORD = os.environ.get('DB_PASSWORD', default=None)
 DB_HOST = os.environ.get('DB_HOST', default=None)
 DB_NAME = os.environ.get('DB_NAME', default=None)
 JWT_COOKIE_SECURE = os.environ.get('JWT_COOKIE_SECURE', default=None)
+DEBUG = os.environ.get('DEBUG', default=0)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
@@ -37,6 +38,9 @@ if JWT_SECRET_KEY:
 
 if JWT_COOKIE_SECURE:
     app.config['JWT_COOKIE_SECURE'] = bool(int(JWT_COOKIE_SECURE))
+
+if DEBUG:
+    app.config['DEBUG'] = bool(int(DEBUG))
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
@@ -505,3 +509,5 @@ def on_ready(data):
 
 if __name__ == '__main__':
     socketio.run(app, host=FLASK_HOST, port=FLASK_PORT)
+    if DEBUG:
+        print(f'Listening on {FLASK_HOST}:{FLASK_PORT}')
